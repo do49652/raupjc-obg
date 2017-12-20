@@ -36,6 +36,8 @@ namespace raupjc_obg
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 
+            services.AddTransient<IServer, Server>();
+
             services.AddMvc();
         }
 

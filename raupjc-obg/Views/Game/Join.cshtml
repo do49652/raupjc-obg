@@ -1,0 +1,43 @@
+﻿@model raupjc_obg.Models.GameViewModels.JoinGameViewModel
+@{
+    ViewData["Title"] = "Join";
+}
+
+<h2>Join</h2>
+
+@if (Model.GameName == null || Model.Username == null)
+{
+    <form method="post">
+        <input name="Username" placeholder="Username" value="@Model.Username">
+        <input name="GameName" placeholder="Game name" value="@Model.GameName">
+        <button type="submit">Submit</button>
+    </form>
+}
+else
+{
+    <div class="container" id="joined">
+
+    </div>
+
+    <script type="text/javascript">
+        var start = function () {
+            var inc = document.getElementById('joined');
+            var wsImpl = window.WebSocket || window.MozWebSocket;
+            window.ws = new wsImpl('ws://localhost:8181');
+
+            ws.onmessage = function (evt) {
+                inc.innerHTML = evt.data;
+            };
+
+            ws.onopen = function () {
+                inc.innerHTML = 'connection open';
+                ws.send("new:" + "@Model.Username" + ":" + "@Model.GameName");
+            };
+
+            ws.onclose = function () {
+                inc.innerHTML = 'connection closed';
+            }
+        }
+        window.onload = start;
+    </script>
+}
