@@ -34,23 +34,21 @@
 		} else {
 			var game = JSON.parse(message);
 			console.log(game["Log"][game["Log"].length - 1]);
-			
-			console.log(game);
 
 			var t = parseInt(game["Turn"]) % Object.keys(game["Players"]).length;
-			console.log(game["Players"][Object.keys(game["Players"])[t]]["Username"]);
-			
 			if (game["Players"][Object.keys(game["Players"])[t]]["Username"] == username) {
 				$('#rollDice').attr("disabled", false);
 				$(function () {
-					$("#rollDice").click(function () {
+					$("#rollDice").off('click').click(function () {
 						ws.send('roll');
+						$('#rollDice').attr("disabled", true);
+						$("#rollDice").off('click').click(function () {});
 					});
 				});
 			} else {
 				$('#rollDice').attr("disabled", true);
 				$(function () {
-					$("#rollDice").click(function () {});
+					$("#rollDice").off('click').click(function () {});
 				});
 			}
 		}
