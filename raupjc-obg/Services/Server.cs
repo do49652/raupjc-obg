@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using Fleck;
+using raupjc_obg.Game;
 
 namespace raupjc_obg.Services
 {
     public class Server : IServer
     {
-        public bool StartServer(Dictionary<IWebSocketConnection, Dictionary<string, string>> sockets, string address, Action onOpen, Action onClose, Action<Dictionary<IWebSocketConnection, Dictionary<string, string>>, IWebSocketConnection, string> onMessage)
+        public bool StartServer(string address, Action onOpen, Action onClose, Action<Dictionary<IWebSocketConnection, Dictionary<string, string>>, Dictionary<string, GameManager>, IWebSocketConnection, string> onMessage)
         {
+            var sockets = new Dictionary<IWebSocketConnection, Dictionary<string, string>>();
+            var games = new Dictionary<string, GameManager>();
             var server = new WebSocketServer(address);
             try
             {
@@ -25,7 +28,7 @@ namespace raupjc_obg.Services
                         onClose.Invoke();
                         sockets.Remove(socket);
                     };
-                    socket.OnMessage = m => onMessage(sockets, socket, m);
+                    socket.OnMessage = message => onMessage(sockets, games, socket, message);
                 });
             }
             catch (Exception e)
