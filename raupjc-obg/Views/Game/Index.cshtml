@@ -1,1 +1,36 @@
-﻿
+﻿@model raupjc_obg.Models.GameViewModels.JoinGameViewModel
+@{
+    ViewData["Title"] = "Game";
+}
+
+<h1>Game</h1>
+
+@if (Model.GameName == null || Model.Username == null || Model.Password == null)
+{
+    <form method="post">
+        <input name="Username" placeholder="Username" value="@Model.Username">
+        <input name="GameName" placeholder="Game name" value="@Model.GameName">
+        <input name="Password" placeholder="Password" value="@Model.Password">
+        <button type="submit">Submit</button>
+    </form>
+}
+else
+{
+    <label class="hidden" id="username">@Model.Username</label>
+    <label class="hidden" id="gamename">@Model.GameName</label>
+    <label class="hidden" id="password">@Model.Password</label>
+
+    <div id="joined"></div>
+    <div id="startgame"></div>
+
+    <div id="game" class="container hidden">
+        <div class="row" id="players">
+            
+        </div>
+        <div class="row">
+            <button id="rollDice" class="disabled">Roll</button>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="js/game.js"></script>
+}
