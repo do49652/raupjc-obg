@@ -94,13 +94,26 @@ namespace raupjc_obg.Controllers
                         break;
 
                     case "ready":
+                        if (game.Scene == null)
+                            game.ChangeScene("roll");
                         socket.Send(JsonConvert.SerializeObject(game));
                         break;
 
                     case "roll":
-                        var r = game.DiceThrow();
-                        game.Rolled(t, r);
+                        game.ThrowDice();
+                        game.ChangeScene("rolled");
+                        goto case "sendReady";
+
+                    case "move":
+                        game.Move();
+                        goto case "end";
+
+                    case "end":
                         game.Next();
+                        game.ChangeScene("roll");
+                        goto case "sendReady";
+
+                    case "sendReady":
                         sockets.Keys.Where(s => sockets[s]["gamename"].Equals(sockets[socket]["gamename"])).ToList()
                             .ForEach(s => s.Send("ready"));
                         break;

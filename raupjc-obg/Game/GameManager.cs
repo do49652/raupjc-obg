@@ -12,8 +12,12 @@ namespace raupjc_obg.Game
         public int StartGold { get; set; }
         public Dictionary<string, Player> Players { get; set; }
         public bool GameStarted { get; set; }
-        public int Turn { get; set; }
         public List<string> Log { get; set; }
+
+        public string Scene { get; set; }
+
+        public int Turn { get; set; }
+        public int LastRoll { get; set; }
 
         public void StartGame()
         {
@@ -28,19 +32,27 @@ namespace raupjc_obg.Game
             return i;
         }
 
-        public int DiceThrow()
+        public void Move()
         {
-            var r = new Random(DateTime.Now.Millisecond);
-            var d1 = r.Next(1, 7);
-            var d2 = r.Next(1, 7);
-            Log.Add("[" + DateTime.Now + "] Rolled " + (d1 + d2));
-            return d1 + d2;
+            Move(WhosTurn(), LastRoll);
         }
 
-        public void Rolled(int i, int r)
+        public void Move(int t, int spaces)
         {
-            Players[Players.Keys.ToList()[i]].Space += r;
-            Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[i] + " moved to space " + Players[Players.Keys.ToList()[i]].Space + ".");
+            Players[Players.Keys.ToList()[t]].Space += spaces;
+            Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[t] + " moved to space " + Players[Players.Keys.ToList()[t]].Space + ".");
+        }
+
+        public void ChangeScene(string scene)
+        {
+            Scene = scene;
+        }
+
+        public void ThrowDice()
+        {
+            var r = new Random(DateTime.Now.Millisecond);
+            LastRoll = r.Next(1, 7) + r.Next(1, 7);
+            Log.Add("[" + DateTime.Now + "] Rolled " + LastRoll);
         }
 
         public void Next()

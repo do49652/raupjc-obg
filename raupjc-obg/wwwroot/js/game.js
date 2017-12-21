@@ -12,19 +12,21 @@
 
 		if (!gameStarted) {
 			if (message == "admin") {
-				document.getElementById('startgame').innerHTML = "<button onclick=\"ws.send('start');\">Start game</button>";
+				document.getElementById('startgame').innerHTML = "<button class='btn btn-primary' onclick=\"ws.send('start');\">Start game</button>";
 			} else if (message == "wrong-password") {
 				inc.innerHTML = "wrong password";
 			} else if (message == "username-taken") {
 				inc.innerHTML = "username taken";
 			} else if (message == "start") {
-				document.getElementById('joined').innerHTML = "";
-				document.getElementById('startgame').innerHTML = "";
+				document.getElementById("lobby").classList.add("hidden");
+				document.getElementById('title').innerHTML = gamename;
+				document.getElementById('desc').innerHTML = "Game started.";
 				ws.send("ready");
 				gameStarted = true;
 				document.getElementById("game").classList.remove("hidden");
 			} else {
 				inc.innerHTML = message;
+				document.getElementById('desc').innerHTML = "Waiting for all players to join.";
 			}
 			return;
 		}
@@ -33,24 +35,54 @@
 			ws.send("ready");
 		} else {
 			var game = JSON.parse(message);
-			console.log(game["Log"][game["Log"].length - 1]);
+
+			console.log(game);
 
 			var t = parseInt(game["Turn"]) % Object.keys(game["Players"]).length;
-			if (game["Players"][Object.keys(game["Players"])[t]]["Username"] == username) {
-				$('#rollDice').attr("disabled", false);
-				$(function () {
-					$("#rollDice").off('click').click(function () {
-						ws.send('roll');
-						$('#rollDice').attr("disabled", true);
-						$("#rollDice").off('click').click(function () {});
-					});
-				});
-			} else {
-				$('#rollDice').attr("disabled", true);
-				$(function () {
-					$("#rollDice").off('click').click(function () {});
-				});
+			var playingUsername = game["Players"][Object.keys(game["Players"])[t]]["Username"];
+
+			var sceneManager = function () {
+				if (game["Scene"] == "roll") {
+					if (playingUsername == username) {
+						$(function () {
+							$('#rollDice').attr("disabled", false);
+
+							$("#rollDice").off('click').click(function () {
+								ws.send('roll');
+
+								$('#rollDice').attr("disabled", true);
+								$("#rollDice").off('click');
+							});
+						});
+					} else {
+						$(function () {
+							$('#rollDice').attr("disabled", true);
+							$("#rollDice").off('click');
+						});
+					}
+				}
+
+				if (game["Scene"] == "rolled") {
+					if (playingUsername == username) {
+						$(function () {
+							$('#message').text("You rolled " + game["LastRoll"] + ".");
+
+							$("#proceed").off('click').click(function () {
+								ws.send('move');
+							});
+						});
+					} else {
+						$(function () {
+							$('#message').text(playingUsername + " rolled " + game["LastRoll"] + ".");
+
+							$('#proceed').attr("disabled", true);
+							$("#proceed").off('click');
+						});
+					}
+				}
 			}
+
+			$("#game").load("/html/" + game["Scene"] + ".html", sceneManager);
 		}
 	};
 
