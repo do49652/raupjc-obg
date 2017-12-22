@@ -147,6 +147,9 @@ namespace raupjc_obg.Game
                     a = action.Split(';')[0];
                     action = action.Substring(a.Length + 1).Trim();
                 }
+                else
+                    action = action.Replace("@", "");
+
                 if (action.Length < 2)
                     break;
 
@@ -160,7 +163,7 @@ namespace raupjc_obg.Game
                     for (var j = 0; j < behaviour.Count; j++)
                     {
                         if (!behaviour[j].Equals("@" + func)) continue;
-                        if (i == j)
+                        if (i == j && !action.Contains("@"))
                         {
                             Players[Players.Keys.ToList()[WhosTurn()]].CurrentEventLine = i;
                             return PlayEvent();

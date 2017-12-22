@@ -23,7 +23,7 @@
 				document.getElementById('desc').innerHTML = "";
 				ws.send("ready");
 				gameStarted = true;
-				document.getElementById("game").classList.remove("hidden");
+				document.getElementById("gameGameContainer").classList.remove("hidden");
 			} else {
 				inc.innerHTML = message;
 				document.getElementById('desc').innerHTML = "Waiting for all players to join.";
@@ -40,10 +40,15 @@
 				$('#clipboard').text(message);
 
 				var log = "";
-				for (let i = 0; i < game["Log"].length; i++) {
+				for (let i = 0; i < game["Log"].length; i++)
 					log += game["Log"][i] + "\n";
-				}
 				$('#log').text(log);
+
+				log = "";
+				for (let i = 0; i < Object.keys(game["Players"]).length; i++)
+					log += Object.keys(game["Players"])[i] + ": " + game["Players"][Object.keys(game["Players"])[i]]["Space"] + "\n";
+
+				$('#players').text(log);
 			});
 
 			var t = parseInt(game["Turn"]) % Object.keys(game["Players"]).length;
@@ -74,7 +79,7 @@
 							if (game["Scene"] == "rolled")
 								$('#message').text("You rolled " + game["LastRoll"] + ".");
 							else if (game["Scene"] == "event")
-								$('#message').text(game["Message"]);
+								$('#message').text("").append(game["Message"]);
 
 							$("#proceed").off('click').click(function () {
 								ws.send('move');
