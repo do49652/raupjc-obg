@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using raupjc_obg.Game.Components;
 
-namespace raupjc_obg.Game.Content.Vanilla
+namespace raupjc_obg.Game.Content.ZagrebContent
 {
     public class Tramvaj : Event
     {
@@ -9,7 +9,6 @@ namespace raupjc_obg.Game.Content.Vanilla
         {
             Name = "Tramvaj";
             Description = "ZET prijevoz";
-            Type = "Transport";
 
             Behaviour = new List<string>
             {

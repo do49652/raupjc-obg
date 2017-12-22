@@ -101,22 +101,40 @@ namespace raupjc_obg.Controllers
                         goto case "sendReady";
 
                     case "move":
+                        if (message.Contains(":"))
+                            goto case "choice";
+
                         if (game.Scene.Equals("rolled"))
                             game.Move();
+                        if (game.Scene.Equals("shop"))
+                            goto case "end";
                         goto case "event";
+
+                    case "choice":
+                        if (!game.CheckEvent())
+                            goto case "end";
+
+                        var m = game.PlayEvent(message.Substring(5).Trim());
+                        if (m != null && m.Equals("@End"))
+                            goto case "end";
+
+                        game.Message = m;
+                        goto case "sendReady";
 
                     case "event":
                         if (!game.CheckEvent())
                             goto case "end";
 
-                        var m = game.PlayEvent();
-                        if (m.Equals("@End"))
+                        m = game.PlayEvent();
+                        if (m != null && m.Equals("@End"))
                             goto case "end";
 
                         game.Message = m;
                         goto case "sendReady";
 
                     case "end":
+                        game.Players[game.Players.Keys.ToList()[game.WhosTurn()]].CurrentEvent = null;
+                        game.Players[game.Players.Keys.ToList()[game.WhosTurn()]].CurrentEventLine = 0;
                         game.Message = "";
                         game.ChangeScene("roll");
                         game.Next();

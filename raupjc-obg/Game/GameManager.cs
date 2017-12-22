@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using raupjc_obg.Game.Components;
-using raupjc_obg.Game.Content.Vanilla;
+using raupjc_obg.Game.Content;
 
 namespace raupjc_obg.Game
 {
     public class GameManager
     {
-        [JsonIgnore]
         public Components.Game Game { get; set; }
 
         public string GameName { get; set; }
@@ -27,14 +26,18 @@ namespace raupjc_obg.Game
         public int LastRoll { get; set; }
         public List<string> Log { get; set; }
 
+        private Random _random;
+
         public void StartGame()
         {
+            Game = new Zagreb();
+            
             if (Players == null)
                 Players = new Dictionary<string, Player>();
-            Log = new List<string>();
+            Players.Values.ToList().ForEach(p=>p.Money=Game.StartingMoney);
 
-            Game = new Components.Game();
-            Game.MiniEvents.Add(new Tramvaj());
+            Log = new List<string>();
+            _random = new Random(DateTime.Now.Millisecond);
 
             GameStarted = true;
             Log.Add("[" + DateTime.Now + "] Game started.");
@@ -67,8 +70,7 @@ namespace raupjc_obg.Game
 
         public void ThrowDice()
         {
-            var r = new Random(DateTime.Now.Millisecond);
-            LastRoll = r.Next(1, 7) + r.Next(1, 7);
+            LastRoll = _random.Next(1, 7) + _random.Next(1, 7);
 
             Log.Add("[" + DateTime.Now + "] Rolled " + LastRoll);
         }
@@ -76,10 +78,10 @@ namespace raupjc_obg.Game
         public bool CheckEvent()
         {
             if (Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent == null &&
-                new Random().Next(0, 100) < 30)
+                _random.Next(0, 100) < 30)
             {
                 Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent =
-                    Game.MiniEvents[new Random().Next(0, Game.Events.Count)];
+                    Game.MiniEvents[_random.Next(0, Game.MiniEvents.Count)];
 
                 Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[WhosTurn()] + " triggered " +
                         Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent.Name + " event.");
@@ -95,15 +97,14 @@ namespace raupjc_obg.Game
             return true;
         }
 
-        public string PlayEvent()
+        public string PlayEvent(string action = null)
         {
             ChangeScene("event");
 
             var behaviour = Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent.Behaviour;
             var i = Players[Players.Keys.ToList()[WhosTurn()]].CurrentEventLine;
-            string action = null;
 
-            if (behaviour[i].Contains(";") && behaviour[i].Split(';')[0].Contains("%"))
+            if (action == null && behaviour[i].Contains(";") && behaviour[i].Split(';')[0].Contains("%"))
             {
                 var possibleActions = new List<string>();
                 while (behaviour[i].Split(';')[0].Contains("%"))
@@ -115,7 +116,7 @@ namespace raupjc_obg.Game
                 possibleActions.Sort();
                 action = possibleActions.Last();
 
-                var rnd = new Random().Next(0, 101);
+                var rnd = _random.Next(0, 101);
                 possibleActions.ForEach(pa =>
                 {
                     if (int.Parse(pa.Split(';')[0].Substring(1, 2)) < rnd)
@@ -155,6 +156,11 @@ namespace raupjc_obg.Game
 
                 if (a.StartsWith("@Variable"))
                     ChangeVariable(a);
+                else if (a.StartsWith("@Buy"))
+                {
+                    Buy(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim());
+                    return null;
+                }
                 else if (a.StartsWith("@Move"))
                     Move(WhosTurn(), int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()));
                 else if (a.StartsWith("@Goto"))
@@ -172,6 +178,25 @@ namespace raupjc_obg.Game
                         break;
                     }
                 }
+                else if (a.StartsWith("@Choice"))
+                {
+                    ChangeScene("choice");
+                    var str = behaviour[i - 1];
+                    var j = 1;
+                    while (behaviour[i].StartsWith("@C" + j))
+                    {
+                        str += "\n" + behaviour[i];
+                        i++;
+                        j++;
+                    }
+                    Players[Players.Keys.ToList()[WhosTurn()]].CurrentEventLine = i;
+                    return str;
+                }
+                else if (a.Equals("@Shop"))
+                {
+                    ChangeScene("shop");
+                    return Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent.Name;
+                }
                 else if (a.StartsWith("@Monologue"))
                 {
                     Players[Players.Keys.ToList()[WhosTurn()]].CurrentEventLine = i;
@@ -186,6 +211,16 @@ namespace raupjc_obg.Game
 
             Players[Players.Keys.ToList()[WhosTurn()]].CurrentEventLine = i;
             return null;
+        }
+
+        public void Buy(string itemName)
+        {
+            if (Game.Items.ContainsKey(itemName) &&
+                Players[Players.Keys.ToList()[WhosTurn()]].Money >= (float)Game.Items[itemName][1])
+            {
+                Players[Players.Keys.ToList()[WhosTurn()]].Money -= (float)Game.Items[itemName][1];
+                Players[Players.Keys.ToList()[WhosTurn()]].Items.Add((Item)Game.Items[itemName][0]);
+            }
         }
 
         public void ChangeVariable(string action)
