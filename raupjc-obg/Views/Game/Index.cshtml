@@ -3,13 +3,20 @@
     ViewData["Title"] = "Game";
 }
 
+<link rel="stylesheet" href="~/css/game.css"/>
+
 <label id="username" class="hidden">@Model.Username</label>
 <label id="gamename" class="hidden">@Model.GameName</label>
 <label id="password" class="hidden">@Model.Password</label>
 
-<h2 id="title">Play</h2>
-<p><i id="desc">Here you can join an existing game or create your own.</i></p>
+<div id="clipboard" class="hidden"></div>
+
+<div style="text-align:center">
+    <h2 id="title">Play</h2>
+    <p><i id="desc">Here you can join an existing game or create your own.</i></p>
+</div>
 <br>
+
 @if (Model.GameName == null || Model.Username == null || Model.Password == null)
 {
     @await Html.PartialAsync("_JoinGame", Model)

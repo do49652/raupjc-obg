@@ -18,11 +18,9 @@ namespace raupjc_obg.Controllers
             server.StartServer("ws://0.0.0.0:8181", () => { }, () => { }, (sockets, games, socket, message) =>
             {
                 GameManager game = null;
-                int t = -1;
                 try
                 {
                     game = games[sockets[socket]["gamename"]];
-                    t = game.WhosTurn();
                 }
                 catch (Exception e) { }
 
@@ -51,8 +49,6 @@ namespace raupjc_obg.Controllers
                             {
                                 GameName = gamename,
                                 Password = password,
-                                FinishSpace = 100,
-                                StartGold = 10,
                                 Players = new Dictionary<string, Player>(),
                                 GameStarted = false,
                                 Turn = 0,
@@ -79,7 +75,8 @@ namespace raupjc_obg.Controllers
                         {
                             Username = username,
                             Admin = games[gamename].Players.Count == 0,
-                            Space = 0
+                            Space = 0,
+                            Variables = new Dictionary<string, string>()
                         };
 
                         if (games[gamename].Players[username].Admin)
@@ -91,11 +88,10 @@ namespace raupjc_obg.Controllers
                         game.StartGame();
                         sockets.Keys.Where(s => sockets[s]["gamename"].Equals(sockets[socket]["gamename"])).ToList()
                             .ForEach(s => s.Send("start"));
+                        game.ChangeScene("roll");
                         break;
 
                     case "ready":
-                        if (game.Scene == null)
-                            game.ChangeScene("roll");
                         socket.Send(JsonConvert.SerializeObject(game));
                         break;
 
@@ -105,12 +101,25 @@ namespace raupjc_obg.Controllers
                         goto case "sendReady";
 
                     case "move":
-                        game.Move();
-                        goto case "end";
+                        if (game.Scene.Equals("rolled"))
+                            game.Move();
+                        goto case "event";
+
+                    case "event":
+                        if (!game.CheckEvent())
+                            goto case "end";
+
+                        var m = game.PlayEvent();
+                        if (m.Equals("@End"))
+                            goto case "end";
+
+                        game.Message = m;
+                        goto case "sendReady";
 
                     case "end":
-                        game.Next();
+                        game.Message = "";
                         game.ChangeScene("roll");
+                        game.Next();
                         goto case "sendReady";
 
                     case "sendReady":

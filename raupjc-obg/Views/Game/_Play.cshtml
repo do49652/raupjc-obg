@@ -1,8 +1,18 @@
-﻿<div id="lobby" class="row">
-    <div id="joined" class="row"></div>
-    <div id="startgame" class="row"></div>
-</div>
+﻿<div class="row">
+    <div id="itemsContainer" class="col-md-3"></div>
 
-<div id="game" class="hidden row"></div>
+    <div id="gameContainer" class="col-md-6" style="text-align:center">
+        <div id="lobby" class="row" style="text-align:center">
+            <div id="joined" class="row"></div>
+            <div id="startgame" class="row"></div>
+        </div>
+
+        <div id="game" class="hidden row" style="text-align:center"></div>
+    </div>
+
+    <div id="logContainer" class="col-md-3">
+        <pre id="log"></pre>
+    </div>
+</div>
 
 <script type="text/javascript" src="js/game.js"></script>

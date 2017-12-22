@@ -1,0 +1,17 @@
+﻿html, body {
+    height: 80vh;
+}
+
+#itemsContainer, #logContainer {
+    overflow-y: auto;
+    overflow-x: auto;
+    height: auto;
+    max-height: 80vh;
+}
+
+#gameContainer {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 80vh;
+    max-height: 80vh;
+}

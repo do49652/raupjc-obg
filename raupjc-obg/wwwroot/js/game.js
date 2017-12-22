@@ -20,7 +20,7 @@
 			} else if (message == "start") {
 				document.getElementById("lobby").classList.add("hidden");
 				document.getElementById('title').innerHTML = gamename;
-				document.getElementById('desc').innerHTML = "Game started.";
+				document.getElementById('desc').innerHTML = "";
 				ws.send("ready");
 				gameStarted = true;
 				document.getElementById("game").classList.remove("hidden");
@@ -36,7 +36,15 @@
 		} else {
 			var game = JSON.parse(message);
 
-			console.log(game);
+			$(function () {
+				$('#clipboard').text(message);
+
+				var log = "";
+				for (let i = 0; i < game["Log"].length; i++) {
+					log += game["Log"][i] + "\n";
+				}
+				$('#log').text(log);
+			});
 
 			var t = parseInt(game["Turn"]) % Object.keys(game["Players"]).length;
 			var playingUsername = game["Players"][Object.keys(game["Players"])[t]]["Username"];
@@ -60,12 +68,13 @@
 							$("#rollDice").off('click');
 						});
 					}
-				}
-
-				if (game["Scene"] == "rolled") {
+				} else {
 					if (playingUsername == username) {
 						$(function () {
-							$('#message').text("You rolled " + game["LastRoll"] + ".");
+							if (game["Scene"] == "rolled")
+								$('#message').text("You rolled " + game["LastRoll"] + ".");
+							else if (game["Scene"] == "event")
+								$('#message').text(game["Message"]);
 
 							$("#proceed").off('click').click(function () {
 								ws.send('move');
@@ -73,7 +82,10 @@
 						});
 					} else {
 						$(function () {
-							$('#message').text(playingUsername + " rolled " + game["LastRoll"] + ".");
+							if (game["Scene"] == "rolled")
+								$('#message').text(playingUsername + " rolled " + game["LastRoll"] + ".");
+							else if (game["Scene"] == "event")
+								$('#message').text(game["Message"]);
 
 							$('#proceed').attr("disabled", true);
 							$("#proceed").off('click');
