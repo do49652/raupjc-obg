@@ -18,12 +18,13 @@ namespace raupjc_obg.Game.Content.ZagrebContent
             {
                 "@Begin",
 
-                "@NoEvent -> Throw",
+                "@NoEvent -> Baci",
                 "@Goto -> Kraj",
 
-                "@Throw",
-                "@Remove -> Zet karta",
+                "@Baci",
+                "@Remove -> Ponistena Zet karta",
                 "@Log+ -> zagaduje okolis. ccc",
+                "@Monologue -> Ne treba meni ovo!",
 
                 "@Kraj",
                 "@End"

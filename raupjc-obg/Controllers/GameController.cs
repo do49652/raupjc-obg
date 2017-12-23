@@ -19,7 +19,7 @@ namespace raupjc_obg.Controllers
         {
             var lastItemI = 0;
             var lastI = 0;
-            server.StartServer("ws://0.0.0.0:8181", () => { }, () => { }, (sockets, games, socket, message) =>
+            server.StartServer("ws://192.168.1.5:8181", () => { }, () => { }, (sockets, games, socket, message) =>
             {
                 GameManager game = null;
                 try
@@ -163,7 +163,7 @@ namespace raupjc_obg.Controllers
                         else
                             lastItemI = 0;
                         socket.Send("item:" + message.Split(':')[1].Trim() + ":" + m);
-                        break;
+                        goto case "sendReady";
 
                     case "end":
                         game.EndEvent();

@@ -1,7 +1,7 @@
 ﻿var start = function () {
 	var inc = document.getElementById('joined');
 	var wsImpl = window.WebSocket || window.MozWebSocket;
-	window.ws = new wsImpl('ws://localhost:8181');
+	window.ws = new wsImpl('ws://192.168.1.5:8181');
 
 	var username = document.getElementById('username').innerHTML;
 	var gamename = document.getElementById('gamename').innerHTML;
@@ -97,8 +97,9 @@
 
 				var log = "";
 				for (let i = 0; i < game["Log"].length; i++)
-					log += game["Log"][i] + "\n";
-				$('#log').text(log);
+					log += '<span data-toggle="tooltip" data-placement="left auto" data-container="body" title="' + game["Log"][i].split(']')[0].substring(1) + '">' + game["Log"][i].replace(/\[([a-z0-9_ :-]*)\]/i, '') + '</span><br>';
+				$('#log').text("").append(log);
+				$('[data-toggle="tooltip"]').tooltip();
 
 				log = "";
 				for (let i = 0; i < Object.keys(game["Players"]).length; i++)
@@ -109,7 +110,7 @@
 
 				log = "<p>Money: " + game["Players"][username]["Money"] + "</p>";
 				for (let i = 0; i < game["Players"][username]["Items"].length; i++)
-					log += '<button class="btn btn-default" id="item1">' + game["Players"][username]["Items"][i]["Name"] + '</button>';
+					log += '<button class="btn btn-default" id="item' + (i + 1) + '">' + game["Players"][username]["Items"][i]["Name"] + '</button>';
 
 				$('#items').text("").append(log);
 			});
@@ -232,9 +233,13 @@
 						}
 					});
 				}
-
-				$('#item1').off('click').click(function () {
-					ws.send('item:Zet karta');
+				
+				$(function () {
+					for (let i = 0; i < game["Players"][username]["Items"].length; i++) {
+						$('#item' + (i + 1)).off('click').click(function () {
+							ws.send('item:' + game["Players"][username]["Items"][i]["Name"]);
+						});
+					}
 				});
 			}
 

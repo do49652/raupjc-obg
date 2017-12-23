@@ -42,8 +42,8 @@ namespace raupjc_obg.Game
             _random = new Random(DateTime.Now.Millisecond);
 
             GameStarted = true;
-            Log.Add("[" + DateTime.Now + "] Game started.");
-            Log.Add("[" + DateTime.Now + "] Next turn: " + Players.Keys.ToList()[0]);
+            Log.Add("[" + DateTime.Now + "] Game started!");
+            Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[0] + " is playing first.");
         }
 
         // Which player is currently playing
@@ -63,9 +63,6 @@ namespace raupjc_obg.Game
         public void Move(int t, int spaces)
         {
             Players[Players.Keys.ToList()[t]].Space += spaces;
-
-            Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[t] + " moved to space " +
-                    Players[Players.Keys.ToList()[t]].Space + ".");
         }
 
         // Change scene (roll, rolled, choice, event, shop)
@@ -78,8 +75,7 @@ namespace raupjc_obg.Game
         public void ThrowDice()
         {
             LastRoll = _random.Next(1, 7) + _random.Next(1, 7);
-
-            Log.Add("[" + DateTime.Now + "] Rolled " + LastRoll);
+            Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[WhosTurn()] + " rolled " + LastRoll);
         }
 
         // Check for running event or trigger a new event - WIP
@@ -87,13 +83,8 @@ namespace raupjc_obg.Game
         {
             if (Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent == null &&
                 _random.Next(0, 100) < 80)
-            {
                 Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent =
                     Game.MiniEvents[_random.Next(0, Game.MiniEvents.Count)];
-
-                Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[WhosTurn()] + " triggered " +
-                        Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent.Name + " event.");
-            }
 
             if (Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent == null)
                 return false;
@@ -214,6 +205,10 @@ namespace raupjc_obg.Game
                 }
                 else if (a.StartsWith("@Move"))     // Action should contain number of spaces. Move() method handles actual moving.
                     Move(t, int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()));
+                else if (a.StartsWith("@Remove"))   // Remove an item from inventory
+                    player.Items.Remove(player.Items.First(item => item.Name.Equals(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim())));
+                else if (a.StartsWith("@Give"))     // Add an item to inventory
+                    player.Items.Add((Item)Game.Items[a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()][0]);
                 else if (a.StartsWith("@Log+"))     // Print text to log like "[Date] Player " + text
                     Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[t] + " " + a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim());
                 else if (a.StartsWith("@Log"))      // Print text to  like "[Date] " + text
@@ -254,7 +249,7 @@ namespace raupjc_obg.Game
                 else                                    // Everything else can be skipped (@Begin etc.)
                     return RunBehaviour(hb, i, null, t);
             }
-            
+
             //return "<!<" + i + ">!>";
             return RunBehaviour(hb, i, null, t);
         }
@@ -266,16 +261,13 @@ namespace raupjc_obg.Game
                 !(Players[Players.Keys.ToList()[WhosTurn()]].Money >= (float)Game.Items[itemName][1])) return;
             Players[Players.Keys.ToList()[WhosTurn()]].Money -= (float)Game.Items[itemName][1];
             Players[Players.Keys.ToList()[WhosTurn()]].Items.Add((Item)Game.Items[itemName][0]);
-
-            Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[WhosTurn()] + " bought " + itemName + ".");
+            Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[WhosTurn()] + " just bought something.");
         }
 
         // Next turn
         public void Next()
         {
             Turn++;
-
-            Log.Add("[" + DateTime.Now + "] Next turn: " + Players.Keys.ToList()[WhosTurn()]);
         }
     }
 }
