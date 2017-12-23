@@ -76,7 +76,6 @@ namespace raupjc_obg.Controllers
                             Username = username,
                             Admin = games[gamename].Players.Count == 0,
                             Space = 0,
-                            Variables = new Dictionary<string, string>()
                         };
 
                         if (games[gamename].Players[username].Admin)
@@ -106,12 +105,10 @@ namespace raupjc_obg.Controllers
 
                         if (game.Scene.Equals("rolled"))
                             game.Move();
-                        if (game.Scene.Equals("shop"))
-                            goto case "end";
                         goto case "event";
 
                     case "choice":
-                        if (!game.CheckEvent())
+                        if (game.Players[game.Players.Keys.ToList()[game.WhosTurn()]].CurrentEvent == null)
                             goto case "end";
 
                         var m = game.PlayEvent(message.Substring(5).Trim());
@@ -133,8 +130,7 @@ namespace raupjc_obg.Controllers
                         goto case "sendReady";
 
                     case "end":
-                        game.Players[game.Players.Keys.ToList()[game.WhosTurn()]].CurrentEvent = null;
-                        game.Players[game.Players.Keys.ToList()[game.WhosTurn()]].CurrentEventLine = 0;
+                        game.EndEvent();
                         game.Message = "";
                         game.ChangeScene("roll");
                         game.Next();

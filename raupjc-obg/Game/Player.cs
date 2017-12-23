@@ -17,15 +17,14 @@ namespace raupjc_obg.Game
         public Event CurrentEvent { get; set; }
         [JsonIgnore]
         public int CurrentEventLine { get; set; }
+        public int RepeatEvent { get; set; }
         
-        public Dictionary<string, string> Variables;
         public List<Item> Items;
         public float Money { get; set; }
 
         public Player()
         {
             EventsVisited = new List<Event>();
-            Variables = new Dictionary<string, string>();
             Items = new List<Item>();
         }
     }

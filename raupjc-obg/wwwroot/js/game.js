@@ -51,11 +51,11 @@
 
 				$('#players').text(log);
 
-				log = "Money: " + game["Players"][username]["Money"] + "\n";
+				log = "<p>Money: " + game["Players"][username]["Money"] + "</p>";
 				for (let i = 0; i < game["Players"][username]["Items"].length; i++)
-					log += game["Players"][username]["Items"][i]["Name"] + "\n";
+					log += '<button class="btn btn-default" id="item1">' + game["Players"][username]["Items"][i]["Name"] + '</button>';
 
-				$('#items').text(log);
+				$('#items').text("").append(log);
 			});
 
 			var t = parseInt(game["Turn"]) % Object.keys(game["Players"]).length;
@@ -137,7 +137,7 @@
 						for (i in items) {
 							i = parseInt(i);
 							$('#proceed' + (i + 1)).removeClass("hidden");
-							$('#proceed' + (i + 1)).text("").append(items[i].name);
+							$('#proceed' + (i + 1)).text("").append(items[i].name + " <i>(Cost: " + items[i].price + ")</i>");
 							if (playingUsername == username && items[i].price <= parseFloat(game["Players"][username]["Money"])) {
 								$('#proceed' + (i + 1)).data('move', "@Buy -> " + items[i].name);
 								$('#proceed' + (i + 1)).attr("disabled", false);
@@ -162,7 +162,7 @@
 				} else {
 					$(function () {
 						if (game["Scene"] == "rolled")
-							$('#message').text((playingUsername == username ? "You" : playingUsername) + " rolled " + game["LastRoll"] + ".");
+							$('#message').text("You rolled " + game["LastRoll"] + ".");
 						else if (game["Scene"] == "event")
 							$('#message').text("").append(game["Message"]);
 

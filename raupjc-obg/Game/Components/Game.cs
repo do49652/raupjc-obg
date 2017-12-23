@@ -12,8 +12,6 @@ namespace raupjc_obg.Game.Components
         public List<Event> MiniEvents { get; set; }
         public Dictionary<string, object[]> Items { get; set; }
 
-        public List<string> Variables { get; set; }
-
         public float StartingMoney { get; set; }
 
         public Game()
