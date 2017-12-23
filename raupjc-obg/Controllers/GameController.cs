@@ -17,6 +17,7 @@ namespace raupjc_obg.Controllers
     {
         public GameController(IServer server)
         {
+            var lastItemI = 0;
             var lastI = 0;
             server.StartServer("ws://0.0.0.0:8181", () => { }, () => { }, (sockets, games, socket, message) =>
             {
@@ -114,7 +115,15 @@ namespace raupjc_obg.Controllers
                         if (game.Players[game.Players.Keys.ToList()[game.WhosTurn()]].CurrentEvent == null)
                             goto case "end";
 
-                        var m = game.PlayEvent(message.Substring(5).Trim());
+                        var m = game.RunBehaviour(game.Players[game.Players.Keys.ToList()[game.WhosTurn()]].CurrentEvent, lastI, message.Substring(5).Trim());
+                        if (!m.Equals("@End"))
+                        {
+                            lastI = int.Parse(m.Split(new[] { "<!<" }, StringSplitOptions.None)[1].Split(new[] { ">!>" }, StringSplitOptions.None)[0]);
+                            Regex rgx = new Regex("<!<[0-9]*>!>");
+                            m = rgx.Replace(m, "");
+                        }
+                        else
+                            lastI = 0;
                         if (m != null && m.Equals("@End"))
                             goto case "end";
 
@@ -125,15 +134,7 @@ namespace raupjc_obg.Controllers
                         if (!game.CheckEvent())
                             goto case "end";
 
-                        m = game.PlayEvent();
-                        if (m != null && m.Equals("@End"))
-                            goto case "end";
-
-                        game.Message = m;
-                        goto case "sendReady";
-
-                    case "item":
-                        m = game.UseItem(((Item)game.Game.Items[message.Split(':')[1].Trim()][0]), message.Split(':').Length == 2 ? null : message.Split(':')[2].Trim(), game.Players.Keys.ToList().IndexOf(sockets[socket]["username"]), lastI);
+                        m = game.RunBehaviour(game.Players[game.Players.Keys.ToList()[game.WhosTurn()]].CurrentEvent, lastI);
                         if (!m.Equals("@End"))
                         {
                             lastI = int.Parse(m.Split(new[] { "<!<" }, StringSplitOptions.None)[1].Split(new[] { ">!>" }, StringSplitOptions.None)[0]);
@@ -142,6 +143,25 @@ namespace raupjc_obg.Controllers
                         }
                         else
                             lastI = 0;
+                        if (m != null && m.Equals("@End"))
+                            goto case "end";
+
+                        game.Message = m;
+                        goto case "sendReady";
+
+                    case "item":
+                        var mm = "";
+                        if (message.Split(':').Length > 2)
+                            mm = message.Substring(message.Split(':')[0].Length + message.Split(':')[1].Length + 2).Trim();
+                        m = game.RunBehaviour(((Item)game.Game.Items[message.Split(':')[1].Trim()][0]), lastItemI, mm.Length == 0 ? null : mm, game.Players.Keys.ToList().IndexOf(sockets[socket]["username"]));
+                        if (!m.Equals("@End"))
+                        {
+                            lastItemI = int.Parse(m.Split(new[] { "<!<" }, StringSplitOptions.None)[1].Split(new[] { ">!>" }, StringSplitOptions.None)[0]);
+                            Regex rgx = new Regex("<!<[0-9]*>!>");
+                            m = rgx.Replace(m, "");
+                        }
+                        else
+                            lastItemI = 0;
                         socket.Send("item:" + message.Split(':')[1].Trim() + ":" + m);
                         break;
 

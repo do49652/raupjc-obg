@@ -35,6 +35,7 @@ namespace raupjc_obg.Game.Content.ZagrebContent
 
                 "@Baci",
                 "@Remove -> Zet karta",
+                "@Monologue -> Ne treba meni ovo!",
                 "@Log+ -> zagaduje okolis. ccc",
 
                 "@Kraj",
