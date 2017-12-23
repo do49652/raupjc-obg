@@ -9,7 +9,10 @@ namespace raupjc_obg.Game.Content.ZagrebContent
         {
             Name = "Tisak";
             Description = "Kiosk sa raznim stvarima koje se mogu kupiti.";
+        }
 
+        public override void SetBehaviour()
+        {
             Behaviour = new List<string>
             {
                 "@Begin",

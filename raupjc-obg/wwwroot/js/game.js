@@ -33,6 +33,61 @@
 
 		if (message == "ready") {
 			ws.send("ready");
+		} else if (message.startsWith("item:")) {
+			console.log(message);
+			$(function () {
+				$('#itemModal .modal-title').text(message.split(":")[1]);
+
+				$('#itemModal .modal-body').text("").append(message.split(":")[2] + "<br>");
+				$('#itemModal .modal-body').append('<button class="btn btn-default" id="item1">Continue</button>');
+				$('#itemModal .modal-body #item1').off('click').click(function () {
+					ws.send('item:Zet karta');
+				});
+
+				var msg = message.split(":")[2].trim();
+
+				if (msg.startsWith("@Choice")) {
+					$("#itemModal .modal-body").load("/html/choice.html", () => {
+
+						var title = msg.split("\n")[0].split("->")[1].trim();
+						var choices = [];
+
+						for (let i = 1; i < msg.split("\n").length; i++) {
+							choices.push({
+								n: parseInt(msg.split("\n")[i].split("->")[0].replace("@C", "").trim()),
+								text: msg.split("\n")[i].split("->")[1].split(";")[0].trim(),
+								action: msg.split("\n")[i].substring(msg.split("\n")[i].indexOf(";") + 1).trim()
+							});
+						}
+
+						$('#itemModal .modal-body #message').text("").append(title);
+
+						for (let i = 1; i <= 8; i++) {
+							$('#itemModal .modal-body #proceed' + i).addClass("hidden");
+							$("#itemModal .modal-body #proceed" + i).off('click');
+						}
+
+						for (i in choices) {
+							$('#itemModal .modal-body #proceed' + choices[i].n).removeClass("hidden");
+							$('#itemModal .modal-body #proceed' + choices[i].n).text("").append(choices[i].text);
+							$('#itemModal .modal-body #proceed' + choices[i].n).data('move', choices[i].action);
+							$("#itemModal .modal-body #proceed" + choices[i].n).off('click').click(function () {
+								ws.send('item:' + message.split(":")[1] + ':' + $(this).data('move'));
+							});
+						}
+
+					});
+
+				}
+
+				$('#itemModal').modal();
+
+				if (message.split(":")[2].trim() == "@End") {
+					$('#itemModal .modal-body').text("");
+					$('#itemModal').modal("hide");
+				}
+
+			});
 		} else {
 			var game = JSON.parse(message);
 			console.log(game);
@@ -47,7 +102,8 @@
 
 				log = "";
 				for (let i = 0; i < Object.keys(game["Players"]).length; i++)
-					log += Object.keys(game["Players"])[i] + ": " + game["Players"][Object.keys(game["Players"])[i]]["Space"] + "\n";
+					log += Object.keys(game["Players"])
+					[i] + ": " + game["Players"][Object.keys(game["Players"])[i]]["Space"] + "\n";
 
 				$('#players').text(log);
 
@@ -176,6 +232,10 @@
 						}
 					});
 				}
+
+				$('#item1').off('click').click(function () {
+					ws.send('item:Zet karta');
+				});
 			}
 
 			$("#game").load("/html/" + game["Scene"] + ".html", sceneManager);

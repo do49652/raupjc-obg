@@ -9,7 +9,10 @@ namespace raupjc_obg.Game.Content.ZagrebContent
         {
             Name = "Tramvaj";
             Description = "ZET prijevoz";
+        }
 
+        public override void SetBehaviour()
+        {
             Behaviour = new List<string>
             {
                 "@Begin",

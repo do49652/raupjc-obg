@@ -18,7 +18,6 @@ namespace raupjc_obg.Game.Components
         {
             Events = new List<Event>();
             MiniEvents = new List<Event>();
-            Variables = new List<string>();
             Items = new Dictionary<string, object[]>();
         }
     }

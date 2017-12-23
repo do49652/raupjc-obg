@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Newtonsoft.Json;
 using raupjc_obg.Game.Components;
 using raupjc_obg.Game.Content;
+using System.Text.RegularExpressions;
 
 namespace raupjc_obg.Game
 {
@@ -118,6 +119,132 @@ namespace raupjc_obg.Game
             else
                 Players[Players.Keys.ToList()[WhosTurn()]].RepeatEvent--;
             Players[Players.Keys.ToList()[WhosTurn()]].CurrentEventLine = 0;
+        }
+
+        public string UseItem(HasBehaviour hb = null, string action = null, int t = -1, int i = 0)
+        {
+            if (hb == null)
+                return null;
+            var behaviour = hb.Behaviour;
+            if (t == -1)
+                t = WhosTurn();
+
+            Player player = Players[Players.Keys.ToList()[t]];
+
+            // If parameter is given, this will be skipped
+            // Check if next action is decided by random chance. If it is, choose one action and continue with it.
+            if (action == null && behaviour[i].Contains(";") && behaviour[i].Split(';')[0].Contains("%"))
+            {
+                var possibleActions = new List<string>();
+                while (behaviour[i].Split(';')[0].Contains("%"))
+                {
+                    possibleActions.Add(behaviour[i]);
+                    i++;
+                }
+
+                possibleActions.Sort();
+                action = possibleActions.Last();
+
+                var rnd = _random.Next(0, 101);
+                possibleActions.ForEach(pa =>
+                {
+                    if (int.Parse(pa.Split(';')[0].Substring(1, 2)) < rnd)
+                        action = pa;
+                });
+
+                action = action.Substring(5).Trim();
+            }
+
+            // If action is not given and is not decided by random chance, just execute current action on behaviour list
+            if (action == null)
+            {
+                action = behaviour[i];
+                i++;
+            }
+
+            // If the action is to end the event, end it
+            if (action.Equals("@End"))
+                return "@End";
+
+            // Loop unitl whole chain of actions is not executed
+            while (action != null)
+            {
+                var a = action;
+
+                // If the action is a chain of actions
+                if (action.Contains(';'))
+                {
+                    a = action.Split(';')[0];
+                    action = action.Substring(a.Length + 1).Trim();
+                }
+                else
+                    action = action.Replace("@", "");
+
+                if (action.Length < 2)
+                    break;
+
+                if (a.StartsWith("@Buy"))           // Do it with Buy() method
+                {
+                    var itemName = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim();
+                    Buy(itemName);
+                    return "You bought <i>" + itemName + "</i>. <!<" + i + ">!>";
+                }
+                else if (a.StartsWith("@OnEvent"))
+                {
+                    if (player.CurrentEvent != null && Players.Keys.ToList().IndexOf(player.Username) == WhosTurn() && player.CurrentEventLine > 0 && player.CurrentEvent.Name.Equals(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()))
+                        continue;
+                    else
+                        break;
+                }
+                else if (a.StartsWith("@NoEvent"))
+                {
+                    var func = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim();
+                    for (var j = 0; j < behaviour.Count; j++)
+                    {
+                        if (!behaviour[j].Equals("@" + func)) continue;
+                        if (i == j && !action.Contains("@"))
+                            return UseItem(hb, null, t, i);
+                        i = j;
+                        break;
+                    }
+                }
+                else if (a.StartsWith("@Move"))     // Action should contain number of spaces. Move() method handles actual moving.
+                    Move(t, int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()));
+                else if (a.StartsWith("@Log+"))     // Print text to log like "[Date] Player " + text
+                    Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[t] + " " + a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim());
+                else if (a.StartsWith("@Log"))      // Print text to  like "[Date] " + text
+                    Log.Add("[" + DateTime.Now + "] " + a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim());
+                else if (a.StartsWith("@Goto"))     // Goto serves to jump on different lines of behaviour
+                {
+                    var func = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim();
+                    for (var j = 0; j < behaviour.Count; j++)
+                    {
+                        if (!behaviour[j].Equals("@" + func)) continue;
+                        if (i == j && !action.Contains("@"))
+                            return UseItem(hb, null, t, i);
+                        i = j;
+                        break;
+                    }
+                }
+                else if (a.StartsWith("@Choice"))   // Give player a choice and respect it by following that line of behaviour
+                {
+                    var str = behaviour[i - 1];
+                    var j = 1;
+                    while (behaviour[i].StartsWith("@C" + j))
+                    {
+                        str += "\n" + behaviour[i];
+                        i++;
+                        j++;
+                    }
+                    return str + "<!<" + i + ">!>";
+                }
+                else if (a.StartsWith("@Monologue"))// Display plain text
+                    return a.Split(';')[0].Split(new[] { "->" }, StringSplitOptions.None)[1].Trim() + "<!<" + i + ">!>";
+                else                                // Everything else can be skipped (@Begin etc.)
+                    return UseItem(hb, null, t, i);
+            }
+
+            return "<!<" + i + ">!>";
         }
 
         // Continue with event behaviour or if parameter given, execute that instead
@@ -258,7 +385,7 @@ namespace raupjc_obg.Game
 
             Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[WhosTurn()] + " bought " + itemName + ".");
         }
-        
+
         // Next turn
         public void Next()
         {

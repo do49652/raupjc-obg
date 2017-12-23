@@ -1,8 +1,15 @@
-﻿namespace raupjc_obg.Game.Components
+﻿using System.Collections.Generic;
+
+namespace raupjc_obg.Game.Components
 {
-    public class Item
+    public abstract class Item : HasBehaviour
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public string Category { get; set; }
+
+        public Item()
+        {
+            SetBehaviour();
+        }
+
     }
 }

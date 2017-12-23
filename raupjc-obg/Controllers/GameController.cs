@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using raupjc_obg.Game;
 using raupjc_obg.Models.GameViewModels;
 using raupjc_obg.Services;
+using raupjc_obg.Game.Components;
+using System.Text.RegularExpressions;
 
 namespace raupjc_obg.Controllers
 {
@@ -15,6 +17,7 @@ namespace raupjc_obg.Controllers
     {
         public GameController(IServer server)
         {
+            var lastI = 0;
             server.StartServer("ws://0.0.0.0:8181", () => { }, () => { }, (sockets, games, socket, message) =>
             {
                 GameManager game = null;
@@ -128,6 +131,19 @@ namespace raupjc_obg.Controllers
 
                         game.Message = m;
                         goto case "sendReady";
+
+                    case "item":
+                        m = game.UseItem(((Item)game.Game.Items[message.Split(':')[1].Trim()][0]), message.Split(':').Length == 2 ? null : message.Split(':')[2].Trim(), game.Players.Keys.ToList().IndexOf(sockets[socket]["username"]), lastI);
+                        if (!m.Equals("@End"))
+                        {
+                            lastI = int.Parse(m.Split(new[] { "<!<" }, StringSplitOptions.None)[1].Split(new[] { ">!>" }, StringSplitOptions.None)[0]);
+                            Regex rgx = new Regex("<!<[0-9]*>!>");
+                            m = rgx.Replace(m, "");
+                        }
+                        else
+                            lastI = 0;
+                        socket.Send("item:" + message.Split(':')[1].Trim() + ":" + m);
+                        break;
 
                     case "end":
                         game.EndEvent();
