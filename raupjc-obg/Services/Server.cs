@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
 using Fleck;
 using raupjc_obg.Game;
 
@@ -9,7 +7,9 @@ namespace raupjc_obg.Services
 {
     public class Server : IServer
     {
-        public bool StartServer(string address, Action onOpen, Action onClose, Action<Dictionary<IWebSocketConnection, Dictionary<string, string>>, Dictionary<string, GameManager>, IWebSocketConnection, string> onMessage)
+        public bool StartServer(string address, Action onOpen, Action onClose,
+            Action<Dictionary<IWebSocketConnection, Dictionary<string, string>>, Dictionary<string, GameManager>,
+                IWebSocketConnection, string> onMessage)
         {
             var sockets = new Dictionary<IWebSocketConnection, Dictionary<string, string>>();
             var games = new Dictionary<string, GameManager>();

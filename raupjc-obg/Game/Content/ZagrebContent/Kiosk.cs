@@ -9,6 +9,9 @@ namespace raupjc_obg.Game.Content.ZagrebContent
         {
             Name = "Tisak";
             Description = "Kiosk sa raznim stvarima koje se mogu kupiti.";
+
+            var karta = new ZetKarta();
+            Items[karta.Name] = new object[] {karta, 10f};
         }
 
         public override void SetBehaviour()

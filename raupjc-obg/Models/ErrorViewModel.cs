@@ -1,5 +1,3 @@
-using System;
-
 namespace raupjc_obg.Models
 {
     public class ErrorViewModel

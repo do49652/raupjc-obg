@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.CodeAnalysis;
-using Newtonsoft.Json;
 using raupjc_obg.Game.Components;
 using raupjc_obg.Game.Content;
-using System.Text.RegularExpressions;
 
 namespace raupjc_obg.Game
 {
     public class GameManager
     {
+        private Random _random;
         public Components.Game Game { get; set; }
         public string GameName { get; set; }
         public string Password { get; set; }
@@ -24,8 +22,6 @@ namespace raupjc_obg.Game
         public int LastRoll { get; set; }
 
         public List<string> Log { get; set; }
-
-        private Random _random;
 
         public void StartGame()
         {
@@ -78,29 +74,33 @@ namespace raupjc_obg.Game
         // Check for running event or trigger a new event
         public bool CheckEvent()
         {
-            if (Game.SetEvents.ContainsKey(Players[Players.Keys.ToList()[WhosTurn()]].Space) && !Players[Players.Keys.ToList()[WhosTurn()]].VisitedEvents.Contains(Game.SetEvents[Players[Players.Keys.ToList()[WhosTurn()]].Space]))
+            var player = Players[Players.Keys.ToList()[WhosTurn()]];
+            var currentSpace = player.Space;
+
+            if (Game.SetEvents.ContainsKey(currentSpace) &&
+                !player.VisitedEvents.Contains(Game.SetEvents[currentSpace]))
             {
-                Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent = Game.SetEvents[Players[Players.Keys.ToList()[WhosTurn()]].Space];
-                Players[Players.Keys.ToList()[WhosTurn()]].RepeatEvent = 0;
-                if (Game.SetEvents[Players[Players.Keys.ToList()[WhosTurn()]].Space].HappensOnce)
-                    Players[Players.Keys.ToList()[WhosTurn()]].VisitedEvents.Add(Game.SetEvents[Players[Players.Keys.ToList()[WhosTurn()]].Space]);
-                Game.SetEvents.Remove(Players[Players.Keys.ToList()[WhosTurn()]].Space);
+                player.CurrentEvent = Game.SetEvents[currentSpace];
+                player.RepeatEvent = 0;
+                if (Game.SetEvents[currentSpace].HappensOnce)
+                    player.VisitedEvents.Add(Game.SetEvents[currentSpace]);
+                Game.SetEvents.Remove(currentSpace);
             }
 
-            if (Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent == null && _random.Next(0, 100) < 80)
+            if (player.CurrentEvent == null && _random.Next(0, 100) < 80)
             {
-                var evnts = Game.MiniEvents.Except(Players[Players.Keys.ToList()[WhosTurn()]].VisitedEvents).ToList();
+                var evnts = Game.MiniEvents.Except(player.VisitedEvents).ToList();
                 if (evnts.Count == 0)
                     return false;
 
                 var evnt = evnts[_random.Next(0, evnts.Count)];
-                Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent = evnt;
+                player.CurrentEvent = evnt;
 
                 if (evnt.HappensOnce)
-                    Players[Players.Keys.ToList()[WhosTurn()]].VisitedEvents.Add(evnt);
+                    player.VisitedEvents.Add(evnt);
             }
 
-            if (Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent == null)
+            if (player.CurrentEvent == null)
                 return false;
 
             return true;
@@ -108,17 +108,21 @@ namespace raupjc_obg.Game
 
         public void EndEvent()
         {
-            if (Players[Players.Keys.ToList()[WhosTurn()]].RepeatEvent <= 1)
+            var player = Players[Players.Keys.ToList()[WhosTurn()]];
+
+            if (player.RepeatEvent <= 1)
             {
-                if (Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent != null)
+                if (player.CurrentEvent != null)
                 {
-                    if (Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent.NextEvent != null)
-                        Players[Players.Keys.ToList()[WhosTurn()]].RepeatEvent = Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent.NextEvent.Repeat;
-                    Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent = Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent.NextEvent;
+                    if (player.CurrentEvent.NextEvent != null)
+                        player.RepeatEvent = player.CurrentEvent.NextEvent.Repeat;
+                    player.CurrentEvent = player.CurrentEvent.NextEvent;
                 }
             }
             else
-                Players[Players.Keys.ToList()[WhosTurn()]].RepeatEvent--;
+            {
+                player.RepeatEvent--;
+            }
         }
 
         public string RunBehaviour(HasBehaviour hb = null, int i = 0, string action = null, int t = -1)
@@ -132,7 +136,7 @@ namespace raupjc_obg.Game
             if (action == null && hb is Event)
                 ChangeScene("event");
 
-            Player player = Players[Players.Keys.ToList()[t]];
+            var player = Players[Players.Keys.ToList()[t]];
             var behaviour = hb.Behaviour;
 
             // If parameter is given, this will be skipped
@@ -182,27 +186,30 @@ namespace raupjc_obg.Game
                     action = action.Substring(a.Length + 1).Trim();
                 }
                 else
+                {
                     action = action.Replace("@", "");
+                }
 
                 if (action.Length < 2)
                     break;
 
-                if (a.StartsWith("@Buy"))           // Do it with Buy() method
+                if (a.StartsWith("@Buy")) // Do it with Buy() method
                 {
-                    var itemName = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim();
+                    var itemName = a.Split(new[] {"->"}, StringSplitOptions.None)[1].Trim();
                     Buy(itemName);
                     return "You bought <i>" + itemName + "</i>. <!<" + i + ">!>";
                 }
-                else if (a.StartsWith("@OnEvent"))  // Execute if specific event is running
-                {
-                    if (player.CurrentEvent != null && Players.Keys.ToList().IndexOf(player.Username) == WhosTurn() && Scene.Equals("event") && player.CurrentEvent.Name.Equals(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()))
+                if (a.StartsWith("@OnEvent")) // Execute if specific event is running
+                    if (player.CurrentEvent != null && Players.Keys.ToList().IndexOf(player.Username) == WhosTurn() &&
+                        Scene.Equals("event") &&
+                        player.CurrentEvent.Name.Equals(a.Split(new[] {"->"}, StringSplitOptions.None)[1].Trim()))
                         continue;
                     else
                         break;
-                }
-                else if (a.StartsWith("@NoEvent"))  // Same as @Goto, used for item behaviour. Used for easier understanding of the behaviour
+                if (a.StartsWith("@NoEvent")
+                ) // Same as @Goto, used for item behaviour. Used for easier understanding of the behaviour
                 {
-                    var func = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim();
+                    var func = a.Split(new[] {"->"}, StringSplitOptions.None)[1].Trim();
                     for (var j = 0; j < behaviour.Count; j++)
                     {
                         if (!behaviour[j].Equals("@" + func)) continue;
@@ -212,29 +219,42 @@ namespace raupjc_obg.Game
                         break;
                     }
                 }
-                else if (a.StartsWith("@Move"))     // Action should contain number of spaces. Move() method handles actual moving.
-                    Move(t, int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()));
-                else if (a.StartsWith("@Remove"))   // Remove an item from inventory
-                    player.Items.Remove(player.Items.First(item => item.Name.Equals(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim())));
-                else if (a.StartsWith("@Give"))     // Add an item to inventory
-                    player.Items.Add((Item)Game.Items[a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()][0]);
-                else if (a.StartsWith("@Money"))    // Give or take money
+                else if (a.StartsWith("@Move")
+                ) // Action should contain number of spaces. Move() method handles actual moving.
                 {
-                    var operation = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()[0];
-                    var ammount = int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim().Substring(1));
+                    Move(t, int.Parse(a.Split(new[] {"->"}, StringSplitOptions.None)[1].Trim()));
+                }
+                else if (a.StartsWith("@Remove")) // Remove an item from inventory
+                {
+                    player.Items.Remove(player.Items.First(item =>
+                        item.Name.Equals(a.Split(new[] {"->"}, StringSplitOptions.None)[1].Trim())));
+                }
+                else if (a.StartsWith("@Give")) // Add an item to inventory
+                {
+                    player.Items.Add(Game.Items[a.Split(new[] {"->"}, StringSplitOptions.None)[1].Trim()]);
+                }
+                else if (a.StartsWith("@Money")) // Give or take money
+                {
+                    var operation = a.Split(new[] {"->"}, StringSplitOptions.None)[1].Trim()[0];
+                    var ammount = int.Parse(a.Split(new[] {"->"}, StringSplitOptions.None)[1].Trim().Substring(1));
 
                     if (operation.Equals('+') || operation.Equals('-'))
-                        player.Money += ((operation.Equals('-') ? -1 : 1) * ammount);
+                        player.Money += (operation.Equals('-') ? -1 : 1) * ammount;
                     else
                         player.Money = ammount;
                 }
-                else if (a.StartsWith("@Log+"))     // Print text to log like "[Date] Player " + text
-                    Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[t] + " " + a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim());
-                else if (a.StartsWith("@Log"))      // Print text to  like "[Date] " + text
-                    Log.Add("[" + DateTime.Now + "] " + a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim());
-                else if (a.StartsWith("@Goto"))     // Goto serves to jump on different lines of behaviour
+                else if (a.StartsWith("@Log+")) // Print text to log like "[Date] Player " + text
                 {
-                    var func = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim();
+                    Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[t] + " " +
+                            a.Split(new[] {"->"}, StringSplitOptions.None)[1].Trim());
+                }
+                else if (a.StartsWith("@Log")) // Print text to  like "[Date] " + text
+                {
+                    Log.Add("[" + DateTime.Now + "] " + a.Split(new[] {"->"}, StringSplitOptions.None)[1].Trim());
+                }
+                else if (a.StartsWith("@Goto")) // Goto serves to jump on different lines of behaviour
+                {
+                    var func = a.Split(new[] {"->"}, StringSplitOptions.None)[1].Trim();
                     for (var j = 0; j < behaviour.Count; j++)
                     {
                         if (!behaviour[j].Equals("@" + func)) continue;
@@ -244,7 +264,8 @@ namespace raupjc_obg.Game
                         break;
                     }
                 }
-                else if (a.StartsWith("@Choice"))   // Give player a choice and respect it by following that line of behaviour
+                else if (a.StartsWith("@Choice")
+                ) // Give player a choice and respect it by following that line of behaviour
                 {
                     if (hb is Event)
                         ChangeScene("choice");
@@ -258,15 +279,19 @@ namespace raupjc_obg.Game
                     }
                     return str + "<!<" + i + ">!>";
                 }
-                else if (a.Equals("@Shop") && hb is Event)// Open the shop menu
+                else if (a.Equals("@Shop") && hb is Event) // Open the shop menu
                 {
                     ChangeScene("shop");
                     return player.CurrentEvent.Name + "<!<" + i + ">!>";
                 }
-                else if (a.StartsWith("@Monologue"))    // Display plain text
-                    return a.Split(';')[0].Split(new[] { "->" }, StringSplitOptions.None)[1].Trim() + "<!<" + i + ">!>";
-                else                                    // Everything else can be skipped (@Begin etc.)
+                else if (a.StartsWith("@Monologue")) // Display plain text
+                {
+                    return a.Split(';')[0].Split(new[] {"->"}, StringSplitOptions.None)[1].Trim() + "<!<" + i + ">!>";
+                }
+                else // Everything else can be skipped (@Begin etc.)
+                {
                     return RunBehaviour(hb, i, null, t);
+                }
             }
 
             //return "<!<" + i + ">!>";
@@ -276,10 +301,13 @@ namespace raupjc_obg.Game
         // If the player can buy the item, buy it
         public void Buy(string itemName)
         {
-            if (!Game.Items.ContainsKey(itemName) ||
-                !(Players[Players.Keys.ToList()[WhosTurn()]].Money >= (float)Game.Items[itemName][1])) return;
-            Players[Players.Keys.ToList()[WhosTurn()]].Money -= (float)Game.Items[itemName][1];
-            Players[Players.Keys.ToList()[WhosTurn()]].Items.Add((Item)Game.Items[itemName][0]);
+            var player = Players[Players.Keys.ToList()[WhosTurn()]];
+
+            if (!player.CurrentEvent.Items.ContainsKey(itemName) ||
+                !(player.Money >= (float) player.CurrentEvent.Items[itemName][1]))
+                return;
+            player.Money -= (float) player.CurrentEvent.Items[itemName][1];
+            player.Items.Add((Item) player.CurrentEvent.Items[itemName][0]);
             Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[WhosTurn()] + " just bought something.");
         }
 
