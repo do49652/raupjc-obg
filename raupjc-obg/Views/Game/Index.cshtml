@@ -1,29 +1,45 @@
 ﻿@model raupjc_obg.Models.GameViewModels.JoinGameViewModel
 @{
     ViewData["Title"] = "Game";
+    Layout = null;
 }
 
-<link rel="stylesheet" href="~/css/game.css"/>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - raupjc_obg</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="~/css/site.min.css" />
+    <link rel="stylesheet" href="~/css/game.css" />
+</head>
 
-<label id="username" class="hidden">@Model.Username</label>
-<label id="gamename" class="hidden">@Model.GameName</label>
-<label id="password" class="hidden">@Model.Password</label>
+<body>
+    <div class="container-fluid">
+        <label id="username" class="hidden">@Model.Username</label>
+        <label id="gamename" class="hidden">@Model.GameName</label>
+        <label id="password" class="hidden">@Model.Password</label>
 
-<div id="clipboard" class="hidden"></div>
+        <div id="clipboard" class="hidden"></div>
 
-<div style="text-align: center">
-    <h2 id="title">Play</h2>
-    <p>
-        <i id="desc">Here you can join an existing game or create your own.</i>
-    </p>
-</div>
-<br>
+        <div style="text-align: center">
+            <h2 id="title">Play</h2>
+            <p>
+                <i id="desc">Here you can join an existing game or create your own.</i>
+            </p>
+        </div>
+        <br>
 
-@if (Model.GameName == null || Model.Username == null || Model.Password == null)
-{
-    @await Html.PartialAsync("_JoinGame", Model)
-}
-else
-{
-    @await Html.PartialAsync("_Play")
-}
+        @if (Model.GameName == null || Model.Username == null || Model.Password == null)
+        {
+            @await Html.PartialAsync("_JoinGame", Model)
+        }
+        else
+        {
+            @await Html.PartialAsync("_Play")
+        }
+    </div>
+</body>
+</html>
