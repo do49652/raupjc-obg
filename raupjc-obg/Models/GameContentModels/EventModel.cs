@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using raupjc_obg.Game.Components;
 
 namespace raupjc_obg.Models.GameContentModels
@@ -18,8 +19,11 @@ namespace raupjc_obg.Models.GameContentModels
         public bool HappensOnce { get; set; }
         public Dictionary<string, object[]> Items { get; set; }
 
-        public Event CreateGameEventEntity()
+        public object[] CreateGameEventEntity(List<Event> loadedEventModels = null, List<Item> loadedItemModels = null)
         {
+            loadedEventModels = loadedEventModels ?? new List<Event>();
+            loadedItemModels = loadedItemModels ?? new List<Item>();
+
             var _event = new NewEvent
             {
                 Name = Name,
@@ -28,8 +32,32 @@ namespace raupjc_obg.Models.GameContentModels
                 Repeat = Repeat,
                 HappensOnce = HappensOnce,
             };
-            // TODO: NextEvent, Items
-            return _event;
+
+            var lEvent = loadedEventModels.FirstOrDefault(e => e.Name.Equals(NextEvent.Name));
+            if (lEvent == null)
+            {
+                var lEventObj = NextEvent.CreateGameEventEntity(loadedEventModels, loadedItemModels);
+                lEvent = (Event)lEventObj[0];
+                loadedEventModels.Add(lEvent);
+
+                loadedEventModels.AddRange(((List<Event>)lEventObj[1]).Except(loadedEventModels));
+                loadedItemModels.AddRange(((List<Item>)lEventObj[2]).Except(loadedItemModels));
+            }
+            _event.NextEvent = lEvent;
+
+            Items.Keys.ToList().ForEach(itemName =>
+            {
+                var item = (ItemModel)Items[itemName][0];
+                var lItem = loadedItemModels.FirstOrDefault(i => i.Name.Equals(item.Name));
+                if (lItem == null)
+                {
+                    lItem = item.CreateGameItemEntity();
+                    loadedItemModels.Add(lItem);
+                }
+                _event.Items[itemName] = new object[] { lItem, (float)Items[itemName][1] };
+            });
+
+            return new object[] { _event, loadedEventModels, loadedItemModels };
         }
 
         private class NewEvent : Event

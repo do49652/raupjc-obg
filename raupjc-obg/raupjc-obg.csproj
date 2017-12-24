@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Models\ContentViewModels\" />
     <Folder Include="wwwroot\html\" />
   </ItemGroup>
 
