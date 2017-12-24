@@ -34,21 +34,18 @@
 		if (message == "ready") {
 			ws.send("ready");
 		} else if (message.startsWith("item:")) {
-			console.log(message);
 			$(function () {
-				$('#itemModal .modal-title').text(message.split(":")[1]);
-
-				$('#itemModal .modal-body').text("").append(message.split(":")[2] + "<br>");
-				$('#itemModal .modal-body').append('<button class="btn btn-default" id="item1">Continue</button>');
-				$('#itemModal .modal-body #item1').off('click').click(function () {
-					ws.send('item:Zet karta');
-				});
-
 				var msg = message.split(":")[2].trim();
+
+				$('#itemModal .modal-title').text(message.split(":")[1]);
+				$('#itemModal .modal-body').text("").append(message.split(":")[2] + "<br>");
+				$('#itemModal .modal-body').append('<button class="btn btn-default" id="item_">Continue</button>');
+				$('#itemModal .modal-body #item_').off('click').click(function () {
+					ws.send('item:' + message.split(":")[1]);
+				});
 
 				if (msg.startsWith("@Choice")) {
 					$("#itemModal .modal-body").load("/html/choice.html", () => {
-
 						var title = msg.split("\n")[0].split("->")[1].trim();
 						var choices = [];
 
@@ -75,9 +72,7 @@
 								ws.send('item:' + message.split(":")[1] + ':' + $(this).data('move'));
 							});
 						}
-
 					});
-
 				}
 
 				$('#itemModal').modal();
@@ -90,7 +85,6 @@
 			});
 		} else {
 			var game = JSON.parse(message);
-			console.log(game);
 
 			$(function () {
 				$('#clipboard').text(message);
@@ -233,7 +227,7 @@
 						}
 					});
 				}
-				
+
 				$(function () {
 					for (let i = 0; i < game["Players"][username]["Items"].length; i++) {
 						$('#item' + (i + 1)).off('click').click(function () {

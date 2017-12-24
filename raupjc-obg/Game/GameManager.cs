@@ -12,12 +12,8 @@ namespace raupjc_obg.Game
     public class GameManager
     {
         public Components.Game Game { get; set; }
-
         public string GameName { get; set; }
-        [JsonIgnore]
         public string Password { get; set; }
-
-        [JsonIgnore]
         public bool GameStarted { get; set; }
         public Dictionary<string, Player> Players { get; set; }
 
@@ -26,6 +22,7 @@ namespace raupjc_obg.Game
 
         public int Turn { get; set; }
         public int LastRoll { get; set; }
+
         public List<string> Log { get; set; }
 
         private Random _random;
@@ -78,19 +75,32 @@ namespace raupjc_obg.Game
             Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[WhosTurn()] + " rolled " + LastRoll);
         }
 
-        // Check for running event or trigger a new event - WIP
+        // Check for running event or trigger a new event
         public bool CheckEvent()
         {
-            if (Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent == null &&
-                _random.Next(0, 100) < 80)
-                Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent =
-                    Game.MiniEvents[_random.Next(0, Game.MiniEvents.Count)];
+            if (Game.SetEvents.ContainsKey(Players[Players.Keys.ToList()[WhosTurn()]].Space) && !Players[Players.Keys.ToList()[WhosTurn()]].VisitedEvents.Contains(Game.SetEvents[Players[Players.Keys.ToList()[WhosTurn()]].Space]))
+            {
+                Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent = Game.SetEvents[Players[Players.Keys.ToList()[WhosTurn()]].Space];
+                Players[Players.Keys.ToList()[WhosTurn()]].RepeatEvent = 0;
+                if (Game.SetEvents[Players[Players.Keys.ToList()[WhosTurn()]].Space].HappensOnce)
+                    Players[Players.Keys.ToList()[WhosTurn()]].VisitedEvents.Add(Game.SetEvents[Players[Players.Keys.ToList()[WhosTurn()]].Space]);
+                Game.SetEvents.Remove(Players[Players.Keys.ToList()[WhosTurn()]].Space);
+            }
+
+            if (Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent == null && _random.Next(0, 100) < 80)
+            {
+                var evnts = Game.MiniEvents.Except(Players[Players.Keys.ToList()[WhosTurn()]].VisitedEvents).ToList();
+                if (evnts.Count == 0)
+                    return false;
+
+                var evnt = evnts[_random.Next(0, evnts.Count)];
+                Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent = evnt;
+
+                if (evnt.HappensOnce)
+                    Players[Players.Keys.ToList()[WhosTurn()]].VisitedEvents.Add(evnt);
+            }
 
             if (Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent == null)
-                return false;
-
-            if (Players[Players.Keys.ToList()[WhosTurn()]].CurrentEvent.Behaviour.Count - 1 ==
-                Players[Players.Keys.ToList()[WhosTurn()]].CurrentEventLine)
                 return false;
 
             return true;
@@ -109,7 +119,6 @@ namespace raupjc_obg.Game
             }
             else
                 Players[Players.Keys.ToList()[WhosTurn()]].RepeatEvent--;
-            Players[Players.Keys.ToList()[WhosTurn()]].CurrentEventLine = 0;
         }
 
         public string RunBehaviour(HasBehaviour hb = null, int i = 0, string action = null, int t = -1)
@@ -209,6 +218,16 @@ namespace raupjc_obg.Game
                     player.Items.Remove(player.Items.First(item => item.Name.Equals(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim())));
                 else if (a.StartsWith("@Give"))     // Add an item to inventory
                     player.Items.Add((Item)Game.Items[a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()][0]);
+                else if (a.StartsWith("@Money"))    // Give or take money
+                {
+                    var operation = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()[0];
+                    var ammount = int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim().Substring(1));
+
+                    if (operation.Equals('+') || operation.Equals('-'))
+                        player.Money += ((operation.Equals('-') ? -1 : 1) * ammount);
+                    else
+                        player.Money = ammount;
+                }
                 else if (a.StartsWith("@Log+"))     // Print text to log like "[Date] Player " + text
                     Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[t] + " " + a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim());
                 else if (a.StartsWith("@Log"))      // Print text to  like "[Date] " + text

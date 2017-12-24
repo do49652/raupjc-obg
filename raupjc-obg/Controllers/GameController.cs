@@ -153,6 +153,7 @@ namespace raupjc_obg.Controllers
                         var mm = "";
                         if (message.Split(':').Length > 2)
                             mm = message.Substring(message.Split(':')[0].Length + message.Split(':')[1].Length + 2).Trim();
+                        System.Diagnostics.Debug.WriteLine(message.Split(':')[1].Trim());
                         m = game.RunBehaviour(((Item)game.Game.Items[message.Split(':')[1].Trim()][0]), lastItemI, mm.Length == 0 ? null : mm, game.Players.Keys.ToList().IndexOf(sockets[socket]["username"]));
                         if (!m.Equals("@End"))
                         {

@@ -39,19 +39,19 @@ Behaviour:
 	@Shop
 	@Monologue
 	@End
+	@Give
+	@Remove
+	@Money
 	
 	@OnEvent		(only for Item behaviour)
 	@NoEvent		(only for Item behaviour)
 	
 	TODO:
-		@Kill -> Player
-		@Die
-		@Set space -> Event
-		@Ressurect -> Player
-		@Money -> +-=ammount
-		@Give -> Item
-		@Remove -> Item
-		@Effect -> Effect
+		@SkipTurn	:)
+		@MoveTo -> space
+		@SetEvent -> Event
+		@GiveEffect -> Effect
+		@RemoveEffect -> Effect
 
 
 

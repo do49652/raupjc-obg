@@ -12,16 +12,16 @@ namespace raupjc_obg.Game
         public int Space { get; set; }
 
         public Event CurrentEvent { get; set; }
-        public int CurrentEventLine { get; set; }
         public int RepeatEvent { get; set; }
+        public List<Event> VisitedEvents { get; set; }
 
         public List<Item> Items;
-        public int CurrentItemBehaviourLine { get; set; }
         public float Money { get; set; }
 
         public Player()
         {
             Items = new List<Item>();
+            VisitedEvents = new List<Event>();
         }
     }
 }

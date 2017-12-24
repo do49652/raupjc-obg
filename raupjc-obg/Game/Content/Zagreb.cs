@@ -23,9 +23,11 @@ namespace raupjc_obg.Game.Content
             var tramvaj = new Tramvaj();
             tramvaj.Repeat = 2;
             kiosk.NextEvent = tramvaj;
-            
+
             MiniEvents.Add(kiosk);
             MiniEvents.Add(new Tramvaj());
+
+            SetEvents[35] = new KunaNaPodu();
         }
     }
 }
