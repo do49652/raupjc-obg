@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using raupjc_obg.Game.Components;
+using raupjc_obg.Models.ContentViewModels;
 
 namespace raupjc_obg.Models.GameContentModels
 {
@@ -33,6 +34,20 @@ namespace raupjc_obg.Models.GameContentModels
                 if (Behaviour == null)
                     Behaviour = new List<string>();
             }
+        }
+
+        public ItemViewModel CreateItemViewModel()
+        {
+            return new ItemViewModel
+            {
+                Id = Id.ToString(),
+                UserId = UserId.ToString(),
+                GameName = Game.Name,
+                Name = Name,
+                Description = Description,
+                Category = Category,
+                Behaviour = string.Join("\n", Behaviour)
+            };
         }
     }
 }

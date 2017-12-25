@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using raupjc_obg.Game.Components;
+using raupjc_obg.Models.ContentViewModels;
 
 namespace raupjc_obg.Models.GameContentModels
 {
@@ -70,6 +71,23 @@ namespace raupjc_obg.Models.GameContentModels
                 if (Behaviour == null)
                     Behaviour = new List<string>();
             }
+        }
+
+        public EventViewModel CreateEventViewModel()
+        {
+            return new EventViewModel
+            {
+                Id = Id.ToString(),
+                UserId = UserId.ToString(),
+                GameName = Game.Name,
+                Name = Name,
+                Description = Description,
+                Repeat = Repeat,
+                HappensOnce = HappensOnce,
+                NextEventName = NextEvent.Name,
+                Behaviour = string.Join("\n", Behaviour),
+                Items = string.Join("\n", Items.Values.Select(i => ((ItemModel)i[0]).Name + ":" + (float)i[1]).ToList())
+            };
         }
     }
 }

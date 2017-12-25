@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using raupjc_obg.Game.Components;
+using raupjc_obg.Models.ContentViewModels;
 
 namespace raupjc_obg.Models.GameContentModels
 {
@@ -92,6 +93,25 @@ namespace raupjc_obg.Models.GameContentModels
             });
 
             return game;
+        }
+
+        public GameViewModel CreateGameViewModel()
+        {
+            return new GameViewModel
+            {
+                Id = Id.ToString(),
+                UserId = UserId.ToString(),
+                Private = Private,
+                Standalone = Standalone,
+                Name = Name,
+                Description = Description,
+                StartingMoney = StartingMoney,
+                Dependencies = string.Join("\n", Dependencies.Select(d => d.Name).ToList()),
+                Events = string.Join("\n", Events.Select(e => e.Name).ToList()),
+                MiniEvents = string.Join("\n", MiniEvents),
+                SetEvents = string.Join("\n", SetEvents.Keys.Select(ek => ek + ":" + SetEvents[ek]).ToList()),
+                Items = string.Join("\n", Items.Select(i => i.Name).ToList())
+            };
         }
     }
 }
