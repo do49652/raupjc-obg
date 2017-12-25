@@ -47,11 +47,14 @@ namespace raupjc_obg.Models.GameContentModels
 
             Items.Keys.ToList().ForEach(itemName =>
             {
-                var item = (ItemModel)Items[itemName][0];
-                var lItem = loadedItemModels.FirstOrDefault(i => i.Name.Equals(item.Name));
+                var item = (string)Items[itemName][0];
+                var lItem = loadedItemModels.FirstOrDefault(i => i.Name.Equals(item));
                 if (lItem == null)
                 {
-                    lItem = item.CreateGameItemEntity();
+                    var iiii = Game.Items.FirstOrDefault(i => i.Name.Equals(item));
+                    if (iiii == null)
+                        return;
+                    lItem = iiii.CreateGameItemEntity();
                     loadedItemModels.Add(lItem);
                 }
                 _event.Items[itemName] = new object[] { lItem, (float)Items[itemName][1] };

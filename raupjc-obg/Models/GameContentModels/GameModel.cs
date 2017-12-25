@@ -18,9 +18,9 @@ namespace raupjc_obg.Models.GameContentModels
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public List<EventModel> MiniEvents { get; set; }
-        public Dictionary<int, EventModel> SetEvents { get; set; }
-        public Dictionary<string, ItemModel> Items { get; set; }
+        public List<string> MiniEvents { get; set; }
+        public Dictionary<int, string> SetEvents { get; set; }
+        public List<ItemModel> Items { get; set; }
 
         public float StartingMoney { get; set; }
 
@@ -37,7 +37,6 @@ namespace raupjc_obg.Models.GameContentModels
                 SetEvents = new Dictionary<int, Event>(),
                 Items = new Dictionary<string, Item>(),
                 StartingMoney = StartingMoney
-
             };
 
             Dependencies.ForEach(dependency =>
@@ -52,10 +51,10 @@ namespace raupjc_obg.Models.GameContentModels
                 game.LoadedItemModels.AddRange(game2.LoadedItemModels.Except(game.LoadedItemModels));
             });
 
-            Items.Keys.ToList().ForEach(item =>
+            Items.ToList().ForEach(item =>
             {
-                if (game.LoadedItemModels.FirstOrDefault(i => i.Name.Equals(item)) == null)
-                    game.LoadedItemModels.Add(Items[item].CreateGameItemEntity());
+                if (game.LoadedItemModels.FirstOrDefault(i => i.Name.Equals(item.Name)) == null)
+                    game.LoadedItemModels.Add(item.CreateGameItemEntity());
             });
 
             Events.ForEach(evnt =>
@@ -73,23 +72,23 @@ namespace raupjc_obg.Models.GameContentModels
 
             MiniEvents.ForEach(miniEvent =>
             {
-                var me = game.LoadedEventModels.FirstOrDefault(e => e.Name.Equals(miniEvent.Name));
+                var me = game.LoadedEventModels.FirstOrDefault(e => e.Name.Equals(miniEvent));
                 if (me != null)
                     game.MiniEvents.Add(me);
             });
 
             SetEvents.Keys.ToList().ForEach(setEvent =>
             {
-                var se = game.LoadedEventModels.FirstOrDefault(e => e.Name.Equals(SetEvents[setEvent].Name));
+                var se = game.LoadedEventModels.FirstOrDefault(e => e.Name.Equals(SetEvents[setEvent]));
                 if (se != null)
                     game.SetEvents[setEvent] = se;
             });
 
-            Items.Keys.ToList().ForEach(item =>
+            Items.ToList().ForEach(item =>
             {
-                var i = game.LoadedItemModels.FirstOrDefault(ii => ii.Name.Equals(item));
+                var i = game.LoadedItemModels.FirstOrDefault(ii => ii.Name.Equals(item.Name));
                 if (i != null)
-                    game.Items[item] = i;
+                    game.Items[item.Name] = i;
             });
 
             return game;

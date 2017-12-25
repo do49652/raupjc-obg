@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using raupjc_obg.Data;
 using raupjc_obg.Models;
+using raupjc_obg.Repositories;
 using raupjc_obg.Services;
 
 namespace raupjc_obg
@@ -28,6 +29,11 @@ namespace raupjc_obg
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddScoped(x => new GameDbContext(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddTransient<IGameRepository, GameRepository>();
+            services.AddTransient<IEventRepository, EventRepository>();
+            services.AddTransient<IItemRepository, ItemRepository>();
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
