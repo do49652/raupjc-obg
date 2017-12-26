@@ -76,10 +76,62 @@ namespace raupjc_obg.Controllers
             if (!gameVm.GameModels.Contains(game))
                 gameVm.GameModels.Insert(0, game);
 
-            gameVm.EventModels = await _eventRepository.GetAllByGames(gameVm.GameModels);
-            gameVm.ItemModels = await _itemRepository.GetAllByGames(gameVm.GameModels);
+            gameVm.EventModels = (await _eventRepository.GetAllByGames(gameVm.GameModels)).OrderBy(g => g.Name).ToList();
+            gameVm.ItemModels = (await _itemRepository.GetAllByGames(gameVm.GameModels)).OrderBy(i => i.Name).ToList();
 
             return View(gameVm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Event(EventViewModel eventVm)
+        {
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            eventVm.Id = Guid.NewGuid().ToString();
+            eventVm.UserId = currentUser.Id;
+            eventVm.GameName = eventVm.GameName.Replace("@", "").Replace(";", "").Replace("->", " ").Replace(":", "_").Replace(",", " ").Replace("  ", " ");
+            eventVm.Name = eventVm.Name.Replace("@", "").Replace(";", "").Replace("->", " ").Replace(":", "_").Replace(",", " ").Replace("  ", " ");
+
+            var game = await _gameRepository.GetGameByName(eventVm.GameName);
+            if (game == null)
+                return RedirectToAction("Game", new { id = game.Id });
+
+            eventVm.EventModels = await _eventRepository.GetAll();
+
+            if (eventVm.EventModels.Select(e => e.Name).ToList().Contains(eventVm.Name))
+                return RedirectToAction("Game", new { id = game.Id });
+
+            if (await _eventRepository.Add(new EventModel
+            {
+                Id = Guid.Parse(eventVm.Id),
+                UserId = Guid.Parse(eventVm.UserId),
+                Game = game,
+                Name = eventVm.Name,
+                Description = eventVm.Description,
+                Behaviour = "",
+                Repeat = 0,
+                NextEvent = null,
+                HappensOnce = false,
+                Items = ""
+            }))
+                return RedirectToAction("Event", new { name = eventVm.Name });
+
+            return RedirectToAction("Game", new { id = game.Id });
+        }
+
+        public async Task<IActionResult> Event(string name)
+        {
+            var _event = await _eventRepository.GetEventByName(name);
+            var game = await _gameRepository.GetGameById(_event.Game.Id);
+            var eventVm = _event.CreateEventViewModel();
+
+            eventVm.GameModels = game.Dependencies ?? new List<GameModel>();
+            if (!eventVm.GameModels.Contains(game))
+                eventVm.GameModels.Insert(0, game);
+
+            eventVm.EventModels = await _eventRepository.GetAllByGames(eventVm.GameModels);
+            eventVm.ItemModels = await _itemRepository.GetAllByGames(eventVm.GameModels);
+
+            return View(eventVm);
         }
     }
 }

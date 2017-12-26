@@ -47,7 +47,7 @@ namespace raupjc_obg.Models.GameContentModels
                 loadedItemModels.AddRange(((List<Item>)lEventObj[2]).Except(loadedItemModels));
             }
             _event.NextEvent = lEvent;
-            
+
             Items.Split('\n').ToList().ForEach(itemLine =>
             {
                 var itemName = itemLine.Split(':')[0];
@@ -77,7 +77,7 @@ namespace raupjc_obg.Models.GameContentModels
 
         public EventViewModel CreateEventViewModel()
         {
-            return new EventViewModel
+            var _event = new EventViewModel
             {
                 Id = Id.ToString(),
                 UserId = UserId.ToString(),
@@ -86,10 +86,15 @@ namespace raupjc_obg.Models.GameContentModels
                 Description = Description,
                 Repeat = Repeat,
                 HappensOnce = HappensOnce,
-                NextEventName = NextEvent.Name,
+                NextEventName = "",
                 Behaviour = Behaviour,
                 Items = Items
             };
+
+            if (NextEvent != null)
+                _event.NextEventName = NextEvent.Name;
+
+            return _event;
         }
     }
 }

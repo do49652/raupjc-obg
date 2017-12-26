@@ -1,0 +1,32 @@
+﻿@model raupjc_obg.Models.ContentViewModels.GameViewModel
+
+<h4>Dependencies</h4>
+<label>Games:</label>
+@if (Model.GameModels != null && Model.GameModels.Count > 0)
+{
+    foreach (var g in Model.GameModels.Select(g => g.Name))
+    {
+        <p> @g</p>
+    }
+}
+<hr />
+
+<label>Events:</label>
+@if (Model.EventModels != null && Model.EventModels.Count > 0)
+{
+    foreach (var g in Model.EventModels.Select(g => g.Name))
+    {
+        <p> @g</p>
+    }
+}
+<hr />
+
+<label>Items:</label>
+@if (Model.ItemModels != null && Model.ItemModels.Count > 0)
+{
+    foreach (var g in Model.ItemModels.Select(g => g.Name))
+    {
+        <p> @g</p>
+    }
+}
+<hr />

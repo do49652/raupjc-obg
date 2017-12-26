@@ -11,8 +11,31 @@
         <h4>Events</h4>
         @foreach (var e in Model.Events.Split('\n'))
         {
-            <p>@e</p>
+            <a asp-action="Event" asp-route-name="@e" class="btn btn-default">@e</a><br />
         }
+        <br />
+
+        <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#new-event">New Event</button>
+        <div id="new-event" class="collapse">
+            <form asp-action="Event" method="post">
+                <input type="hidden" name="GameName" value="@Model.Name"/>
+
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input class="form-control" type="text" name="Name" />
+                </div>
+
+                <div class="form-group">
+                    <label>Description:</label>
+                    <input class="form-control" type="text" name="Description" />
+                </div>
+
+                <div align="right">
+                    <button class="btn btn-primary" type="submit">Create</button>
+                </div>
+            </form>
+        </div>
+
     </div>
 
     <div class="col-md-4">
@@ -24,36 +47,7 @@
     </div>
 
     <div class="col-md-4">
-        <h4>Dependencies</h4>
-        <label>Games:</label>
-        @if (Model.GameModels != null && Model.GameModels.Count > 0)
-        {
-            foreach (var g in Model.GameModels.Select(g => g.Name))
-            {
-                <p> @g</p>
-            }
-        }
-        <hr />
-
-        <label>Events:</label>
-        @if (Model.EventModels != null && Model.EventModels.Count > 0)
-        {
-            foreach (var g in Model.EventModels.Select(g => g.Name))
-            {
-                <p> @g</p>
-            }
-        }
-        <hr />
-
-        <label>Items:</label>
-        @if (Model.ItemModels != null && Model.ItemModels.Count > 0)
-        {
-            foreach (var g in Model.ItemModels.Select(g => g.Name))
-            {
-                <p> @g</p>
-            }
-        }
-        <hr />
+        @await Html.PartialAsync("_Dependencies", Model)
     </div>
 
 

@@ -19,33 +19,33 @@ namespace raupjc_obg.Repositories
 
         public async Task<List<EventModel>> GetAll()
         {
-            return await _dbContext.Events.ToListAsync();
+            return await _dbContext.Events.Include(e => e.Game).ToListAsync();
         }
 
         public async Task<List<EventModel>> GetAllByUser(Guid userId)
         {
-            return await _dbContext.Events.Where(e => e.UserId.Equals(userId)).ToListAsync();
+            return await _dbContext.Events.Include(e => e.Game).Where(e => e.UserId.Equals(userId)).ToListAsync();
         }
 
         public async Task<EventModel> GetEventById(Guid id)
         {
-            return await _dbContext.Events.FirstOrDefaultAsync(e => e.Id.Equals(id));
+            return await _dbContext.Events.Include(e => e.Game).FirstOrDefaultAsync(e => e.Id.Equals(id));
         }
 
         public async Task<EventModel> GetEventByName(string name)
         {
-            return await _dbContext.Events.FirstOrDefaultAsync(e => e.Name.Equals(name));
+            return await _dbContext.Events.Include(e => e.Game).FirstOrDefaultAsync(e => e.Name.Equals(name));
         }
 
         public async Task<List<EventModel>> GetAllByGame(GameModel game)
         {
-            return await _dbContext.Events.Where(e => e.Game.Name.Equals(game.Name)).ToListAsync();
+            return await _dbContext.Events.Include(e => e.Game).Where(e => e.Game.Name.Equals(game.Name)).ToListAsync();
         }
 
         public async Task<List<EventModel>> GetAllByGames(List<GameModel> games)
         {
             var gamesNames = games.Select(g => g.Name).ToList();
-            return await _dbContext.Events.Where(e => gamesNames.Contains(e.Game.Name)).ToListAsync();
+            return await _dbContext.Events.Include(e => e.Game).Where(e => gamesNames.Contains(e.Game.Name)).ToListAsync();
         }
 
         public async Task<bool> Add(EventModel _event)
@@ -89,6 +89,12 @@ namespace raupjc_obg.Repositories
                     return false;
                 _event.NextEvent = nextEvent;
             }
+
+            if (game.Events == null)
+                game.Events = new List<EventModel>();
+
+            if (!game.Events.Contains(_event))
+                game.Events.Add(_event);
 
             _dbContext.Events.Add(_event);
             await _dbContext.SaveChangesAsync();
