@@ -19,42 +19,42 @@ namespace raupjc_obg.Repositories
 
         public async Task<List<GameModel>> GetAll()
         {
-            return await _dbContext.Games.Include(g=>g.Events).ToListAsync();
+            return await _dbContext.Games.Include(g => g.Events).Include(g => g.Items).ToListAsync();
         }
 
         public async Task<List<GameModel>> GetAllPublicGames()
         {
-            return await _dbContext.Games.Include(g => g.Events).Where(g => !g.Private).ToListAsync();
+            return await _dbContext.Games.Include(g => g.Events).Include(g => g.Items).Where(g => !g.Private).ToListAsync();
         }
 
         public async Task<List<GameModel>> GetAllPrivateGames()
         {
-            return await _dbContext.Games.Include(g => g.Events).Where(g => g.Private).ToListAsync();
+            return await _dbContext.Games.Include(g => g.Events).Include(g => g.Items).Where(g => g.Private).ToListAsync();
         }
 
         public async Task<List<GameModel>> GetAllByUser(Guid userId)
         {
-            return await _dbContext.Games.Include(g => g.Events).Where(g => g.UserId.Equals(userId)).ToListAsync();
+            return await _dbContext.Games.Include(g => g.Events).Include(g => g.Items).Where(g => g.UserId.Equals(userId)).ToListAsync();
         }
 
         public async Task<List<GameModel>> GetPublicGames(Guid userId)
         {
-            return await _dbContext.Games.Include(g => g.Events).Where(g => g.UserId.Equals(userId) && !g.Private).ToListAsync();
+            return await _dbContext.Games.Include(g => g.Events).Include(g => g.Items).Where(g => g.UserId.Equals(userId) && !g.Private).ToListAsync();
         }
 
         public async Task<List<GameModel>> GetPrivateGames(Guid userId)
         {
-            return await _dbContext.Games.Include(g => g.Events).Where(g => g.UserId.Equals(userId) && g.Private).ToListAsync();
+            return await _dbContext.Games.Include(g => g.Events).Include(g => g.Items).Where(g => g.UserId.Equals(userId) && g.Private).ToListAsync();
         }
 
         public async Task<GameModel> GetGameById(Guid id)
         {
-            return await _dbContext.Games.Include(g => g.Events).FirstOrDefaultAsync(g => g.Id.Equals(id));
+            return await _dbContext.Games.Include(g => g.Events).Include(g => g.Items).FirstOrDefaultAsync(g => g.Id.Equals(id));
         }
 
         public async Task<GameModel> GetGameByName(string name)
         {
-            return await _dbContext.Games.Include(g => g.Events).FirstOrDefaultAsync(g => g.Name.Equals(name));
+            return await _dbContext.Games.Include(g => g.Events).Include(g => g.Items).FirstOrDefaultAsync(g => g.Name.Equals(name));
         }
 
         public async Task<bool> Add(GameModel game)

@@ -40,10 +40,34 @@
 
     <div class="col-md-4">
         <h4>Items</h4>
+        <p>Items: @Model.Items</p>
         @foreach (var i in Model.Items.Split('\n'))
         {
-            <p>@i</p>
+            <a asp-action="Item" asp-route-name="@i" class="btn btn-default">@i</a><br />
         }
+        <br />
+
+        <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#new-item">New Item</button>
+        <div id="new-item" class="collapse">
+            <form asp-action="Item" method="post">
+                <input type="hidden" name="GameName" value="@Model.Name" />
+
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input class="form-control" type="text" name="Name" />
+                </div>
+
+                <div class="form-group">
+                    <label>Description:</label>
+                    <input class="form-control" type="text" name="Description" />
+                </div>
+
+                <div align="right">
+                    <button class="btn btn-primary" type="submit">Create</button>
+                </div>
+            </form>
+        </div>
+
     </div>
 
     <div class="col-md-4">

@@ -93,7 +93,7 @@ namespace raupjc_obg.Controllers
 
             var game = await _gameRepository.GetGameByName(eventVm.GameName);
             if (game == null)
-                return RedirectToAction("Game", new { id = game.Id });
+                return RedirectToAction("Index", "Content");
 
             eventVm.EventModels = await _eventRepository.GetAll();
 
@@ -133,5 +133,55 @@ namespace raupjc_obg.Controllers
 
             return View(eventVm);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Item(ItemViewModel itemVm)
+        {
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            itemVm.Id = Guid.NewGuid().ToString();
+            itemVm.UserId = currentUser.Id;
+            itemVm.GameName = itemVm.GameName.Replace("@", "").Replace(";", "").Replace("->", " ").Replace(":", "_").Replace(",", " ").Replace("  ", " ");
+            itemVm.Name = itemVm.Name.Replace("@", "").Replace(";", "").Replace("->", " ").Replace(":", "_").Replace(",", " ").Replace("  ", " ");
+
+            var game = await _gameRepository.GetGameByName(itemVm.GameName);
+            if (game == null)
+                return RedirectToAction("Index", "Content");
+
+            itemVm.ItemModels = await _itemRepository.GetAll();
+
+            if (itemVm.ItemModels.Select(e => e.Name).ToList().Contains(itemVm.Name))
+                return RedirectToAction("Game", new { id = game.Id });
+
+            if (await _itemRepository.Add(new ItemModel
+            {
+                Id = Guid.Parse(itemVm.Id),
+                UserId = Guid.Parse(itemVm.UserId),
+                Game = game,
+                Name = itemVm.Name,
+                Description = itemVm.Description,
+                Behaviour = "",
+                Category = ""
+            }))
+                return RedirectToAction("Item", new { name = itemVm.Name });
+
+            return RedirectToAction("Game", new { id = game.Id });
+        }
+
+        public async Task<IActionResult> Item(string name)
+        {
+            var item = await _itemRepository.GetItemByName(name);
+            var game = await _gameRepository.GetGameById(item.Game.Id);
+            var itemVm = item.CreateItemViewModel();
+
+            itemVm.GameModels = game.Dependencies ?? new List<GameModel>();
+            if (!itemVm.GameModels.Contains(game))
+                itemVm.GameModels.Insert(0, game);
+
+            itemVm.EventModels = await _eventRepository.GetAllByGames(itemVm.GameModels);
+            itemVm.ItemModels = await _itemRepository.GetAllByGames(itemVm.GameModels);
+
+            return View(itemVm);
+        }
+
     }
 }

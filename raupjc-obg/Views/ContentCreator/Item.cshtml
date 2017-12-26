@@ -1,0 +1,27 @@
+﻿@using raupjc_obg.Models.ContentViewModels
+@model ItemViewModel
+@{
+    ViewData["Title"] = "Event";
+}
+
+<h2>@Model.Name</h2>
+<p>@Model.Description</p>
+
+<div class="row">
+    <div class="col-md-8">
+        <h4>Behaviour</h4>
+        <textarea rows="16"></textarea>
+    </div>
+
+    <div class="col-md-4">
+        @{
+            var game = new GameViewModel
+            {
+                GameModels = Model.GameModels,
+                EventModels = Model.EventModels,
+                ItemModels = Model.ItemModels
+            };
+            await Html.PartialAsync("_Dependencies", game);
+        }
+    </div>
+</div>
