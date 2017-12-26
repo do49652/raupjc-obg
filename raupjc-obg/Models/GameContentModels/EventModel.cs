@@ -14,11 +14,13 @@ namespace raupjc_obg.Models.GameContentModels
 
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<string> Behaviour { get; set; }
+        public string Behaviour { get; set; }
         public int Repeat { get; set; }
         public EventModel NextEvent { get; set; }
         public bool HappensOnce { get; set; }
-        public Dictionary<string, object[]> Items { get; set; }
+        public string Items { get; set; }
+
+        public EventModel() { }
 
         public object[] CreateGameEventEntity(List<Event> loadedEventModels = null, List<Item> loadedItemModels = null)
         {
@@ -29,7 +31,7 @@ namespace raupjc_obg.Models.GameContentModels
             {
                 Name = Name,
                 Description = Description,
-                Behaviour = Behaviour,
+                Behaviour = Behaviour.Split('\n').ToList(),
                 Repeat = Repeat,
                 HappensOnce = HappensOnce,
             };
@@ -45,20 +47,20 @@ namespace raupjc_obg.Models.GameContentModels
                 loadedItemModels.AddRange(((List<Item>)lEventObj[2]).Except(loadedItemModels));
             }
             _event.NextEvent = lEvent;
-
-            Items.Keys.ToList().ForEach(itemName =>
+            
+            Items.Split('\n').ToList().ForEach(itemLine =>
             {
-                var item = (string)Items[itemName][0];
-                var lItem = loadedItemModels.FirstOrDefault(i => i.Name.Equals(item));
+                var itemName = itemLine.Split(':')[0];
+                var lItem = loadedItemModels.FirstOrDefault(i => i.Name.Equals(itemName));
                 if (lItem == null)
                 {
-                    var iiii = Game.Items.FirstOrDefault(i => i.Name.Equals(item));
+                    var iiii = Game.Items.FirstOrDefault(i => i.Name.Equals(itemName));
                     if (iiii == null)
                         return;
                     lItem = iiii.CreateGameItemEntity();
                     loadedItemModels.Add(lItem);
                 }
-                _event.Items[itemName] = new object[] { lItem, (float)Items[itemName][1] };
+                _event.Items[itemName] = new object[] { lItem, float.Parse(itemLine.Split(':')[1]) };
             });
 
             return new object[] { _event, loadedEventModels, loadedItemModels };
@@ -85,8 +87,8 @@ namespace raupjc_obg.Models.GameContentModels
                 Repeat = Repeat,
                 HappensOnce = HappensOnce,
                 NextEventName = NextEvent.Name,
-                Behaviour = string.Join("\n", Behaviour),
-                Items = string.Join("\n", Items.Values.Select(i => ((ItemModel)i[0]).Name + ":" + (float)i[1]).ToList())
+                Behaviour = Behaviour,
+                Items = Items
             };
         }
     }

@@ -44,7 +44,8 @@ namespace raupjc_obg.Repositories
 
         public async Task<List<EventModel>> GetAllByGames(List<GameModel> games)
         {
-            return await _dbContext.Events.Where(e => games.Select(g => g.Name).ToList().Contains(e.Game.Name)).ToListAsync();
+            var gamesNames = games.Select(g => g.Name).ToList();
+            return await _dbContext.Events.Where(e => gamesNames.Contains(e.Game.Name)).ToListAsync();
         }
 
         public async Task<bool> Add(EventModel _event)

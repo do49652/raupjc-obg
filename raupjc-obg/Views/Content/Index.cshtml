@@ -1,3 +1,12 @@
-﻿<div class="jumbotron text-center">
-    <h1>Content</h1>
+﻿@using raupjc_obg.Models.ContentViewModels
+@model List<GameViewModel>
+<h1>Content</h1>
+
+<div class="row">
+    @foreach (var game in Model)
+    {
+        <a class="btn btn-default" asp-controller="ContentCreator" asp-action="Game" asp-route-id="@game.Id">@game.Name</a><br/>
+    }
+    <br/>
+    <a class="btn btn-success" asp-controller="ContentCreator" asp-action="Index">Create a new game</a>
 </div>

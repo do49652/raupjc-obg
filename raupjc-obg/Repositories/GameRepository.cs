@@ -145,6 +145,7 @@ namespace raupjc_obg.Repositories
 
             oGame.Items = updatedItems;
 
+            _dbContext.Games.Add(oGame);
             await _dbContext.SaveChangesAsync();
             return true;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using raupjc_obg.Game.Components;
 using raupjc_obg.Models.ContentViewModels;
 
@@ -13,8 +14,10 @@ namespace raupjc_obg.Models.GameContentModels
 
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<string> Behaviour { get; set; }
+        public string Behaviour { get; set; }
         public string Category { get; set; }
+
+        public ItemModel() { }
 
         public Item CreateGameItemEntity()
         {
@@ -22,7 +25,7 @@ namespace raupjc_obg.Models.GameContentModels
             {
                 Name = Name,
                 Description = Description,
-                Behaviour = Behaviour,
+                Behaviour = Behaviour.Split('\n').ToList(),
                 Category = Category
             };
         }
@@ -46,7 +49,7 @@ namespace raupjc_obg.Models.GameContentModels
                 Name = Name,
                 Description = Description,
                 Category = Category,
-                Behaviour = string.Join("\n", Behaviour)
+                Behaviour = Behaviour
             };
         }
     }

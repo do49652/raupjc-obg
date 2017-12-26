@@ -25,11 +25,11 @@ namespace raupjc_obg.Data
             modelBuilder.Entity<GameModel>().Property(g => g.Private);
             modelBuilder.Entity<GameModel>().Property(g => g.Standalone);
             modelBuilder.Entity<GameModel>().Property(g => g.StartingMoney);
+            modelBuilder.Entity<GameModel>().Property(g => g.MiniEvents);
+            modelBuilder.Entity<GameModel>().Property(g => g.SetEvents);
             modelBuilder.Entity<GameModel>().HasMany(g => g.Dependencies);
             modelBuilder.Entity<GameModel>().HasMany(g => g.Events).WithRequired(e => e.Game);
             modelBuilder.Entity<GameModel>().HasMany(g => g.Items).WithRequired(i => i.Game);
-            modelBuilder.Entity<GameModel>().HasRequired(g => g.MiniEvents);
-            modelBuilder.Entity<GameModel>().HasRequired(g => g.SetEvents);
 
             modelBuilder.Entity<EventModel>().HasKey(e => e.Id);
             modelBuilder.Entity<EventModel>().Property(e => e.UserId).IsRequired();
@@ -37,18 +37,18 @@ namespace raupjc_obg.Data
             modelBuilder.Entity<EventModel>().Property(e => e.Description);
             modelBuilder.Entity<EventModel>().Property(e => e.HappensOnce);
             modelBuilder.Entity<EventModel>().Property(e => e.Repeat);
+            modelBuilder.Entity<EventModel>().Property(e => e.Behaviour);
+            modelBuilder.Entity<EventModel>().Property(e => e.Items);
             modelBuilder.Entity<EventModel>().HasRequired(e => e.Game).WithMany(g => g.Events);
             modelBuilder.Entity<EventModel>().HasOptional(e => e.NextEvent);
-            modelBuilder.Entity<EventModel>().HasRequired(e => e.Behaviour);
-            modelBuilder.Entity<EventModel>().HasRequired(e => e.Items);
 
             modelBuilder.Entity<ItemModel>().HasKey(i => i.Id);
             modelBuilder.Entity<ItemModel>().Property(i => i.UserId).IsRequired();
             modelBuilder.Entity<ItemModel>().Property(i => i.Name).IsRequired();
             modelBuilder.Entity<ItemModel>().Property(i => i.Description);
             modelBuilder.Entity<ItemModel>().Property(i => i.Category);
+            modelBuilder.Entity<ItemModel>().Property(i => i.Behaviour);
             modelBuilder.Entity<ItemModel>().HasRequired(i => i.Game).WithMany(g => g.Items);
-            modelBuilder.Entity<ItemModel>().HasRequired(i => i.Behaviour);
 
         }
     }

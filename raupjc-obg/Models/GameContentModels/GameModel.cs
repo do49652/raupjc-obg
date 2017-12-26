@@ -19,11 +19,13 @@ namespace raupjc_obg.Models.GameContentModels
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public List<string> MiniEvents { get; set; }
-        public Dictionary<int, string> SetEvents { get; set; }
+        public string MiniEvents { get; set; }
+        public string SetEvents { get; set; }
         public List<ItemModel> Items { get; set; }
 
         public float StartingMoney { get; set; }
+
+        public GameModel() { }
 
         public Game.Components.Game CreateGameEntity(List<Game.Components.Game> loadedGameModels = null, List<Event> loadedEventModels = null, List<Item> loadedItemModels = null)
         {
@@ -49,6 +51,7 @@ namespace raupjc_obg.Models.GameContentModels
                 game.LoadedGameModels.Add(game2);
                 game.LoadedGameModels.AddRange(game2.LoadedGameModels.Except(game.LoadedGameModels));
 
+                game.LoadedEventModels.AddRange(game2.LoadedEventModels.Except(game.LoadedEventModels));
                 game.LoadedItemModels.AddRange(game2.LoadedItemModels.Except(game.LoadedItemModels));
             });
 
@@ -71,18 +74,18 @@ namespace raupjc_obg.Models.GameContentModels
                 game.LoadedEventModels.Add((Event)evnt2[0]);
             });
 
-            MiniEvents.ForEach(miniEvent =>
+            MiniEvents.Split('\n').ToList().ForEach(miniEvent =>
             {
                 var me = game.LoadedEventModels.FirstOrDefault(e => e.Name.Equals(miniEvent));
                 if (me != null)
                     game.MiniEvents.Add(me);
             });
 
-            SetEvents.Keys.ToList().ForEach(setEvent =>
+            SetEvents.Split('\n').ToList().ForEach(setEvent =>
             {
-                var se = game.LoadedEventModels.FirstOrDefault(e => e.Name.Equals(SetEvents[setEvent]));
+                var se = game.LoadedEventModels.FirstOrDefault(e => e.Name.Equals(setEvent.Split(':')[1]));
                 if (se != null)
-                    game.SetEvents[setEvent] = se;
+                    game.SetEvents[int.Parse(setEvent.Split(':')[0])] = se;
             });
 
             Items.ToList().ForEach(item =>
@@ -97,7 +100,7 @@ namespace raupjc_obg.Models.GameContentModels
 
         public GameViewModel CreateGameViewModel()
         {
-            return new GameViewModel
+            var game = new GameViewModel
             {
                 Id = Id.ToString(),
                 UserId = UserId.ToString(),
@@ -106,12 +109,21 @@ namespace raupjc_obg.Models.GameContentModels
                 Name = Name,
                 Description = Description,
                 StartingMoney = StartingMoney,
-                Dependencies = string.Join("\n", Dependencies.Select(d => d.Name).ToList()),
-                Events = string.Join("\n", Events.Select(e => e.Name).ToList()),
-                MiniEvents = string.Join("\n", MiniEvents),
-                SetEvents = string.Join("\n", SetEvents.Keys.Select(ek => ek + ":" + SetEvents[ek]).ToList()),
-                Items = string.Join("\n", Items.Select(i => i.Name).ToList())
+                Dependencies = "",
+                Events = "",
+                Items = "",
+                MiniEvents = MiniEvents,
+                SetEvents = SetEvents
             };
+
+            if (Dependencies != null && Dependencies.Count > 0)
+                game.Dependencies = string.Join("\n", Dependencies.Select(d => d.Name).ToList());
+            if (Events != null && Events.Count > 0)
+                game.Events = string.Join("\n", Events.Select(e => e.Name).ToList());
+            if (Items != null && Items.Count > 0)
+                game.Items = string.Join("\n", Items.Select(i => i.Name).ToList());
+
+            return game;
         }
     }
 }

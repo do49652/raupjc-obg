@@ -1,0 +1,60 @@
+﻿@model raupjc_obg.Models.ContentViewModels.GameViewModel
+@{
+    ViewData["Title"] = "Game";
+}
+
+<h2>@Model.Name</h2>
+<p>@Model.Description</p>
+
+<div class="row">
+    <div class="col-md-4">
+        <h4>Events</h4>
+        @foreach (var e in Model.Events.Split('\n'))
+        {
+            <p>@e</p>
+        }
+    </div>
+
+    <div class="col-md-4">
+        <h4>Items</h4>
+        @foreach (var i in Model.Items.Split('\n'))
+        {
+            <p>@i</p>
+        }
+    </div>
+
+    <div class="col-md-4">
+        <h4>Dependencies</h4>
+        <label>Games:</label>
+        @if (Model.GameModels != null && Model.GameModels.Count > 0)
+        {
+            foreach (var g in Model.GameModels.Select(g => g.Name))
+            {
+                <p> @g</p>
+            }
+        }
+        <hr />
+
+        <label>Events:</label>
+        @if (Model.EventModels != null && Model.EventModels.Count > 0)
+        {
+            foreach (var g in Model.EventModels.Select(g => g.Name))
+            {
+                <p> @g</p>
+            }
+        }
+        <hr />
+
+        <label>Items:</label>
+        @if (Model.ItemModels != null && Model.ItemModels.Count > 0)
+        {
+            foreach (var g in Model.ItemModels.Select(g => g.Name))
+            {
+                <p> @g</p>
+            }
+        }
+        <hr />
+    </div>
+
+
+</div>
