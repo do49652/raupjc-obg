@@ -40,7 +40,6 @@
 
     <div class="col-md-4">
         <h4>Items</h4>
-        <p>Items: @Model.Items</p>
         @foreach (var i in Model.Items.Split('\n'))
         {
             <a asp-action="Item" asp-route-name="@i" class="btn btn-default">@i</a><br />

@@ -183,5 +183,20 @@ namespace raupjc_obg.Controllers
             return View(itemVm);
         }
 
+        [HttpPost]
+        public async Task<bool> SaveItemBehaviour(ItemViewModel itemVm)
+        {
+            var item = await _itemRepository.GetItemById(Guid.Parse(itemVm.Id)) ?? await _itemRepository.GetItemByName(itemVm.Name);
+            item.Behaviour = itemVm.Behaviour;
+            return await _itemRepository.Add(item);
+        }
+
+        [HttpPost]
+        public async Task<bool> SaveEventBehaviour(EventViewModel eventVm)
+        {
+            var _event = await _eventRepository.GetEventById(Guid.Parse(eventVm.Id)) ?? await _eventRepository.GetEventByName(eventVm.Name);
+            _event.Behaviour = eventVm.Behaviour;
+            return await _eventRepository.Add(_event);
+        }
     }
 }

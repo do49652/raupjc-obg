@@ -10,18 +10,38 @@
 <div class="row">
     <div class="col-md-8">
         <h4>Behaviour</h4>
-        <textarea rows="16"></textarea>
+
+        <input type="hidden" id="id" value="@Model.Id" />
+        <input type="hidden" id="name" value="@Model.Name" />
+
+        <div class="form-group">
+            <textarea id="behaviour" rows="16">@Model.Behaviour</textarea>
+        </div>
+
+        <div align="right">
+            <button id="save-item-behaviour" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Save</span></button>
+        </div>
     </div>
 
     <div class="col-md-4">
         @{
             var game = new GameViewModel
             {
-                GameModels = Model.GameModels,
-                EventModels = Model.EventModels,
-                ItemModels = Model.ItemModels
+                GameModels = Model.GameModels.OrderBy(g=>g.Name).ToList(),
+                EventModels = Model.EventModels.OrderBy(e => e.Name).ToList(),
+                ItemModels = Model.ItemModels.OrderBy(i => i.Name).ToList()
             };
-            await Html.PartialAsync("_Dependencies", game);
+            @await Html.PartialAsync("_Dependencies", game);
         }
     </div>
 </div>
+
+@section Scripts{
+    <script src="~/js/contentCreator.js"></script>
+    <script src="~/lib/ladda-bootstrap/spin.min.js"></script>
+<script src="~/lib/ladda-bootstrap/ladda.min.js"></script>
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/lib/ladda-bootstrap/ladda-themeless.min.css" />
+}
