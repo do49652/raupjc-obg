@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using raupjc_obg.Game.Components;
 using raupjc_obg.Models.ContentViewModels;
 
@@ -42,7 +43,7 @@ namespace raupjc_obg.Models.GameContentModels
                 StartingMoney = StartingMoney
             };
 
-            Dependencies.ForEach(dependency =>
+            Dependencies?.ForEach(dependency =>
             {
                 if (game.LoadedGameModels.FirstOrDefault(d => d.Name.Equals(dependency.Name)) != null)
                     return;
@@ -55,13 +56,13 @@ namespace raupjc_obg.Models.GameContentModels
                 game.LoadedItemModels.AddRange(game2.LoadedItemModels.Except(game.LoadedItemModels));
             });
 
-            Items.ToList().ForEach(item =>
+            Items?.ToList().ForEach(item =>
             {
                 if (game.LoadedItemModels.FirstOrDefault(i => i.Name.Equals(item.Name)) == null)
                     game.LoadedItemModels.Add(item.CreateGameItemEntity());
             });
 
-            Events.ForEach(evnt =>
+            Events?.ForEach(evnt =>
             {
                 if (game.LoadedEventModels.FirstOrDefault(e => e.Name.Equals(evnt.Name)) != null)
                     return;
@@ -74,21 +75,21 @@ namespace raupjc_obg.Models.GameContentModels
                 game.LoadedEventModels.Add((Event)evnt2[0]);
             });
 
-            MiniEvents.Split('\n').ToList().ForEach(miniEvent =>
+            MiniEvents?.Split('\n').ToList().ForEach(miniEvent =>
             {
                 var me = game.LoadedEventModels.FirstOrDefault(e => e.Name.Equals(miniEvent));
                 if (me != null)
                     game.MiniEvents.Add(me);
             });
 
-            SetEvents.Split('\n').ToList().ForEach(setEvent =>
+            SetEvents?.Split('\n').ToList().ForEach(setEvent =>
             {
                 var se = game.LoadedEventModels.FirstOrDefault(e => e.Name.Equals(setEvent.Split(':')[1]));
                 if (se != null)
                     game.SetEvents[int.Parse(setEvent.Split(':')[0])] = se;
             });
 
-            Items.ToList().ForEach(item =>
+            Items?.ToList().ForEach(item =>
             {
                 var i = game.LoadedItemModels.FirstOrDefault(ii => ii.Name.Equals(item.Name));
                 if (i != null)

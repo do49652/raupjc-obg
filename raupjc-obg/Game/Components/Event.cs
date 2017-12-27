@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace raupjc_obg.Game.Components
 {
@@ -11,8 +12,11 @@ namespace raupjc_obg.Game.Components
             SetBehaviour();
         }
 
+        [JsonIgnore]
         public int Repeat { get; set; }
+        [JsonIgnore]
         public Event NextEvent { get; set; }
+        [JsonIgnore]
         public bool HappensOnce { get; set; }
         public Dictionary<string, object[]> Items { get; set; }
     }

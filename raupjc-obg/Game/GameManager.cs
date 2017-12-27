@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using raupjc_obg.Game.Components;
 using raupjc_obg.Game.Content;
 
@@ -10,8 +11,11 @@ namespace raupjc_obg.Game
     {
         private Random _random;
         public Components.Game Game { get; set; }
+        [JsonIgnore]
         public string GameName { get; set; }
+        [JsonIgnore]
         public string Password { get; set; }
+        [JsonIgnore]
         public bool GameStarted { get; set; }
         public Dictionary<string, Player> Players { get; set; }
 
@@ -23,9 +27,9 @@ namespace raupjc_obg.Game
 
         public List<string> Log { get; set; }
 
-        public void StartGame()
+        public void StartGame(Components.Game game)
         {
-            Game = new Zagreb();
+            Game = game;
 
             if (Players == null)
                 Players = new Dictionary<string, Player>();

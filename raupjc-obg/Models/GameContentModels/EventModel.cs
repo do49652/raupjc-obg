@@ -37,7 +37,7 @@ namespace raupjc_obg.Models.GameContentModels
             };
 
             var lEvent = loadedEventModels.FirstOrDefault(e => e.Name.Equals(NextEvent.Name));
-            if (lEvent == null)
+            if (lEvent == null && NextEvent != null)
             {
                 var lEventObj = NextEvent.CreateGameEventEntity(loadedEventModels, loadedItemModels);
                 lEvent = (Event)lEventObj[0];
@@ -48,7 +48,7 @@ namespace raupjc_obg.Models.GameContentModels
             }
             _event.NextEvent = lEvent;
 
-            Items.Split('\n').ToList().ForEach(itemLine =>
+            Items?.Split('\n').ToList().ForEach(itemLine =>
             {
                 var itemName = itemLine.Split(':')[0];
                 var lItem = loadedItemModels.FirstOrDefault(i => i.Name.Equals(itemName));

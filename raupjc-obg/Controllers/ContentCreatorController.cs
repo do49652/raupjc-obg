@@ -209,5 +209,24 @@ namespace raupjc_obg.Controllers
             _event.Items = eventVm.Items;
             return await _eventRepository.Add(_event);
         }
+
+        [HttpPost]
+        public async Task<bool> SaveGameStartingMoney(GameViewModel gameVm)
+        {
+            var game = await _gameRepository.GetGameById(Guid.Parse(gameVm.Id)) ?? await _gameRepository.GetGameByName(gameVm.Name);
+            game.StartingMoney = gameVm.StartingMoney;
+            return await _gameRepository.Add(game);
+        }
+
+        [HttpPost]
+        public async Task<bool> SaveGameRandomSetEvents(GameViewModel gameVm)
+        {
+            var game = await _gameRepository.GetGameById(Guid.Parse(gameVm.Id)) ?? await _gameRepository.GetGameByName(gameVm.Name);
+            game.MiniEvents = gameVm.MiniEvents ?? "";
+            game.SetEvents = gameVm.SetEvents ?? "";
+            return await _gameRepository.Add(game);
+        }
+
+
     }
 }

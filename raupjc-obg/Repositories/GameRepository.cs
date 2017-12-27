@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using raupjc_obg.Data;
 using raupjc_obg.Models.GameContentModels;
 
@@ -59,7 +60,9 @@ namespace raupjc_obg.Repositories
 
         public async Task<bool> Add(GameModel game)
         {
-            var oGame = await _dbContext.Games.FirstOrDefaultAsync(g => g.Id.Equals(game.Id)) ?? await _dbContext.Games.FirstOrDefaultAsync(g => g.Name.Equals(game.Name));
+            var newGame = false;
+            var oGame = await _dbContext.Games.FirstOrDefaultAsync(g => g.Id.Equals(game.Id)) ??
+                        await _dbContext.Games.FirstOrDefaultAsync(g => g.Name.Equals(game.Name));
             if (oGame != null && oGame.UserId.Equals(game.UserId))
             {
                 oGame.Name = game.Name;
@@ -73,16 +76,20 @@ namespace raupjc_obg.Repositories
             else if (oGame != null)
                 return false;
             else
+            {
                 oGame = game;
+                newGame = true;
+            }
 
             var missingDependency = false;
             var updatedDependencies = new List<GameModel>();
-            game.Dependencies.ForEach(async dependency =>
+            game.Dependencies?.ForEach(async dependency =>
             {
                 if (missingDependency)
                     return;
 
-                var d = await _dbContext.Games.FirstOrDefaultAsync(g => g.Id.Equals(dependency.Id)) ?? await _dbContext.Games.FirstOrDefaultAsync(g => g.Name.Equals(dependency.Name));
+                var d = await _dbContext.Games.FirstOrDefaultAsync(g => g.Id.Equals(dependency.Id)) ??
+                        await _dbContext.Games.FirstOrDefaultAsync(g => g.Name.Equals(dependency.Name));
                 if (d == null)
                 {
                     missingDependency = true;
@@ -100,12 +107,12 @@ namespace raupjc_obg.Repositories
 
             var missingEvent = false;
             var updatedEvents = new List<EventModel>();
-            game.Events.ForEach(async _event =>
+            game.Events?.ForEach(_event =>
             {
                 if (missingEvent)
                     return;
 
-                var e = await _dbContext.Events.FirstOrDefaultAsync(ev => ev.Id.Equals(_event.Id)) ?? await _dbContext.Events.FirstOrDefaultAsync(ev => ev.Name.Equals(_event.Name));
+                var e = _dbContext.Events.FirstOrDefault(ev => ev.Id.Equals(_event.Id)) ?? _dbContext.Events.FirstOrDefault(ev => ev.Name.Equals(_event.Name));
                 if (e == null)
                 {
                     missingEvent = true;
@@ -123,13 +130,13 @@ namespace raupjc_obg.Repositories
 
             var missingItem = false;
             var updatedItems = new List<ItemModel>();
-            game.Items.ForEach(async item =>
+            game.Items?.ForEach(item =>
             {
                 if (missingItem)
                     return;
 
-                var i = await _dbContext.Items.FirstOrDefaultAsync(it => it.Id.Equals(item.Id)) ??
-                        await _dbContext.Items.FirstOrDefaultAsync(it => it.Name.Equals(item.Name));
+                var i = _dbContext.Items.FirstOrDefault(it => it.Id.Equals(item.Id)) ??
+                        _dbContext.Items.FirstOrDefault(it => it.Name.Equals(item.Name));
                 if (i == null)
                 {
                     missingItem = true;
@@ -145,7 +152,8 @@ namespace raupjc_obg.Repositories
 
             oGame.Items = updatedItems;
 
-            _dbContext.Games.Add(oGame);
+            if (newGame && !_dbContext.Games.Contains(oGame))
+                _dbContext.Games.Add(oGame);
             await _dbContext.SaveChangesAsync();
             return true;
         }

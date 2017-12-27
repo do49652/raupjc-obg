@@ -8,11 +8,11 @@
 <p>@Model.Description</p>
 
 <div class="row">
+    <input type="hidden" id="id" value="@Model.Id"/>
+    <input type="hidden" id="name" value="@Model.Name"/>
+
     <div class="col-md-8">
         <h4>Behaviour</h4>
-
-        <input type="hidden" id="id" value="@Model.Id" />
-        <input type="hidden" id="name" value="@Model.Name" />
 
         <div class="form-group">
             <textarea id="behaviour" rows="32" style="width: 100%;">@Model.Behaviour</textarea>
@@ -27,11 +27,12 @@
         @{
             var game = new GameViewModel
             {
-                GameModels = Model.GameModels.OrderBy(g=>g.Name).ToList(),
+                GameModels = Model.GameModels.OrderBy(g => g.Name).ToList(),
                 EventModels = Model.EventModels.OrderBy(e => e.Name).ToList(),
                 ItemModels = Model.ItemModels.OrderBy(i => i.Name).ToList()
             };
-            @await Html.PartialAsync("_Dependencies", game);
+            @await Html.PartialAsync("_Dependencies", game)
+            ;
         }
     </div>
 </div>

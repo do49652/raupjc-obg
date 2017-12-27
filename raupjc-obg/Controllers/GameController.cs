@@ -6,16 +6,22 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using raupjc_obg.Game;
 using raupjc_obg.Models.GameViewModels;
+using raupjc_obg.Repositories;
 using raupjc_obg.Services;
 
 namespace raupjc_obg.Controllers
 {
     public class GameController : Controller
     {
-        public GameController(IServer server)
+        public GameController(IServer server, IGameRepository gameRepository)
         {
             var lastItemI = 0;
             var lastI = 0;
+
+            var task = gameRepository.GetGameByName("Zagreb");
+            while (!task.IsCompleted) ;
+            var gameEntity = task.Result;
+
             server.StartServer("ws://192.168.1.5:8181", () => { }, () => { }, (sockets, games, socket, message) =>
             {
                 GameManager game = null;
@@ -90,7 +96,7 @@ namespace raupjc_obg.Controllers
                         goto case "list";
 
                     case "start":
-                        game.StartGame();
+                        game.StartGame(gameEntity.CreateGameEntity());
                         sockets.Keys.Where(s => sockets[s]["gamename"].Equals(sockets[socket]["gamename"])).ToList()
                             .ForEach(s => s.Send("start"));
                         game.ChangeScene("roll");
@@ -122,8 +128,8 @@ namespace raupjc_obg.Controllers
                             message.Substring(5).Trim());
                         if (!m.Equals("@End"))
                         {
-                            lastI = int.Parse(m.Split(new[] {"<!<"}, StringSplitOptions.None)[1]
-                                .Split(new[] {">!>"}, StringSplitOptions.None)[0]);
+                            lastI = int.Parse(m.Split(new[] { "<!<" }, StringSplitOptions.None)[1]
+                                .Split(new[] { ">!>" }, StringSplitOptions.None)[0]);
                             var rgx = new Regex("<!<[0-9]*>!>");
                             m = rgx.Replace(m, "");
                         }
@@ -145,8 +151,8 @@ namespace raupjc_obg.Controllers
                             lastI);
                         if (!m.Equals("@End"))
                         {
-                            lastI = int.Parse(m.Split(new[] {"<!<"}, StringSplitOptions.None)[1]
-                                .Split(new[] {">!>"}, StringSplitOptions.None)[0]);
+                            lastI = int.Parse(m.Split(new[] { "<!<" }, StringSplitOptions.None)[1]
+                                .Split(new[] { ">!>" }, StringSplitOptions.None)[0]);
                             var rgx = new Regex("<!<[0-9]*>!>");
                             m = rgx.Replace(m, "");
                         }
@@ -172,8 +178,8 @@ namespace raupjc_obg.Controllers
                             game.Players.Keys.ToList().IndexOf(sockets[socket]["username"]));
                         if (!m.Equals("@End"))
                         {
-                            lastItemI = int.Parse(m.Split(new[] {"<!<"}, StringSplitOptions.None)[1]
-                                .Split(new[] {">!>"}, StringSplitOptions.None)[0]);
+                            lastItemI = int.Parse(m.Split(new[] { "<!<" }, StringSplitOptions.None)[1]
+                                .Split(new[] { ">!>" }, StringSplitOptions.None)[0]);
                             var rgx = new Regex("<!<[0-9]*>!>");
                             m = rgx.Replace(m, "");
                         }
