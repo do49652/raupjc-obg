@@ -15,7 +15,7 @@
         <input type="hidden" id="name" value="@Model.Name" />
 
         <div class="form-group">
-            <textarea id="behaviour" rows="16">@Model.Behaviour</textarea>
+            <textarea id="behaviour" rows="32" style="width: 100%;">@Model.Behaviour</textarea>
         </div>
 
         <div align="right">
@@ -23,7 +23,7 @@
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-offset-1 col-md-3">
         @{
             var game = new GameViewModel
             {

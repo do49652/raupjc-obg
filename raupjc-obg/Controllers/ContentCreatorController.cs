@@ -131,6 +131,9 @@ namespace raupjc_obg.Controllers
             eventVm.EventModels = await _eventRepository.GetAllByGames(eventVm.GameModels);
             eventVm.ItemModels = await _itemRepository.GetAllByGames(eventVm.GameModels);
 
+            if (eventVm.Items == null)
+                eventVm.Items = "";
+
             return View(eventVm);
         }
 
@@ -196,6 +199,14 @@ namespace raupjc_obg.Controllers
         {
             var _event = await _eventRepository.GetEventById(Guid.Parse(eventVm.Id)) ?? await _eventRepository.GetEventByName(eventVm.Name);
             _event.Behaviour = eventVm.Behaviour;
+            return await _eventRepository.Add(_event);
+        }
+
+        [HttpPost]
+        public async Task<bool> SaveEventItems(EventViewModel eventVm)
+        {
+            var _event = await _eventRepository.GetEventById(Guid.Parse(eventVm.Id)) ?? await _eventRepository.GetEventByName(eventVm.Name);
+            _event.Items = eventVm.Items;
             return await _eventRepository.Add(_event);
         }
     }
