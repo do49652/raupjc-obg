@@ -15,7 +15,8 @@ namespace raupjc_obg.Services
             ConnectionString = cnnstr;
         }
 
-        public bool StartServer(string address, Action onOpen, Action onClose,
+        public bool StartServer(string address, Action onOpen, Action<Dictionary<IWebSocketConnection, Dictionary<string, string>>, Dictionary<string, GameManager>,
+                IWebSocketConnection> onClose,
             Action<string, Dictionary<IWebSocketConnection, Dictionary<string, string>>, Dictionary<string, GameManager>,
                 IWebSocketConnection, string> onMessage)
         {
@@ -33,7 +34,7 @@ namespace raupjc_obg.Services
                     };
                     socket.OnClose = () =>
                     {
-                        onClose.Invoke();
+                        onClose.Invoke(sockets, games, socket);
                         sockets.Remove(socket);
                     };
                     socket.OnMessage = message => onMessage(ConnectionString, sockets, games, socket, message);

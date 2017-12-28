@@ -33,9 +33,20 @@ var start = function () {
 				document.getElementById("jumbotron").classList.add("hidden");
 				ws.send("ready");
 				gameStarted = true;
-				document.getElementById("itemsContainer").classList.remove("hidden");
-				document.getElementById("logContainer").classList.remove("hidden");
+				document.getElementById("leftContainers").classList.remove("hidden");
+				document.getElementById("rightContainers").classList.remove("hidden");
 				document.getElementById("gameGameContainer").classList.remove("hidden");
+
+				$(function () {
+					$('#chatInput').keypress(function (e) {
+						if (e.which == 13) {
+							ws.send("chat:" + username + ":" + $('#chatInput').val());
+							$('#chatInput').val("");
+							return false;
+						}
+					});
+				});
+
 			} else {
 				if (!admin)
 					document.getElementById("startgame").innerHTML = "";
@@ -53,7 +64,7 @@ var start = function () {
 
 				$("#itemModal .modal-title").text(message.split(":")[1]);
 				$("#itemModal .modal-body").text("").append(message.split(":")[2] + "<br>");
-				$("#itemModal .modal-body").append('<button class="btn btn-default" id="item_">Continue</button>');
+				$("#itemModal .modal-body").append('<button class="btn btn-warning" id="item_">Continue</button>');
 				$("#itemModal .modal-body #item_").off("click").click(function () {
 					ws.send("item:" + message.split(":")[1]);
 				});
@@ -98,6 +109,13 @@ var start = function () {
 				}
 
 			});
+		} else if (message.startsWith("chat:")) {
+			$(function () {
+				var sender = message.split(":")[1].trim();
+				var sentMessage = message.substring(sender.length + 6);
+
+				$('#chat').append('<span>[' + sender + '] ' + sentMessage + '</span><br>');
+			});
 		} else {
 			var game = JSON.parse(message);
 
@@ -106,7 +124,8 @@ var start = function () {
 
 				var log = "";
 				for (let i = 0; i < game["Log"].length; i++)
-					log += '<span data-toggle="tooltip" data-placement="left auto" data-container="body" title="' + game["Log"][i].split("]")[0].substring(1) + '">' + game["Log"][i].replace(/\[([a-z0-9_ :-]*)\]/i, "") + "</span><br>";
+					log += '<span data-toggle="tooltip" data-placement="left auto" data-container="body" title="' + game["Log"][i].split("]")
+					[0].substring(1) + '">' + game["Log"][i].replace(/\[([a-z0-9_ :-]*)\]/i, "") + "</span><br>";
 				$("#log").text("").append(log);
 				$('[data-toggle="tooltip"]').tooltip();
 

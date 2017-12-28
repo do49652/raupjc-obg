@@ -23,19 +23,28 @@ namespace raupjc_obg.Controllers
         {
             _server = server;
 
-            var lastItemI = 0;
-            var lastI = 0;
+            server.StartServer("ws://192.168.1.5:8181", () => { },
+                (sockets, games, socket) =>
+            {
+                GameManager game = null;
+                try { game = games[sockets[socket]["gamename"]]; }
+                catch (Exception e) { return; }
 
-            server.StartServer("ws://192.168.1.5:8181", () => { }, () => { }, (cnnstr, sockets, games, socket, message) =>
+                game.RunBehaviour(null, 0, "@Log+ -> left the game.", game.Players.Keys.ToList().IndexOf(sockets[socket]["username"]));
+                game.Players.Remove(sockets[socket]["username"]);
+                sockets.Keys.Where(s => sockets[s]["gamename"].Equals(sockets[socket]["gamename"])).ToList().ForEach(s => s.Send("ready"));
+
+                if (game.Players.Count == 0)
+                    games.Remove(sockets[socket]["gamename"]);
+            },
+                (cnnstr, sockets, games, socket, message) =>
              {
                  GameManager game = null;
                  try
                  {
                      game = games[sockets[socket]["gamename"]];
                  }
-                 catch (Exception e)
-                 {
-                 }
+                 catch (Exception e) { }
 
                  switch (message.Contains(":") ? message.Split(':')[0].Trim() : message)
                  {
@@ -56,6 +65,8 @@ namespace raupjc_obg.Controllers
 
                          sockets[socket]["username"] = username;
                          sockets[socket]["gamename"] = gamename;
+                         sockets[socket]["lastI"] = "0";
+                         sockets[socket]["lastItemI"] = "0";
 
                          if (!games.ContainsKey(sockets[socket]["gamename"]))
                          {
@@ -136,18 +147,18 @@ namespace raupjc_obg.Controllers
                              goto case "end";
 
                          var m = game.RunBehaviour(
-                             game.Players[game.Players.Keys.ToList()[game.WhosTurn()]].CurrentEvent, lastI,
+                             game.Players[game.Players.Keys.ToList()[game.WhosTurn()]].CurrentEvent, int.Parse(sockets[socket]["lastI"]),
                              message.Substring(5).Trim());
                          if (!m.Equals("@End"))
                          {
-                             lastI = int.Parse(m.Split(new[] { "<!<" }, StringSplitOptions.None)[1]
-                                 .Split(new[] { ">!>" }, StringSplitOptions.None)[0]);
+                             sockets[socket]["lastI"] = m.Split(new[] { "<!<" }, StringSplitOptions.None)[1]
+                                 .Split(new[] { ">!>" }, StringSplitOptions.None)[0];
                              var rgx = new Regex("<!<[0-9]*>!>");
                              m = rgx.Replace(m, "");
                          }
                          else
                          {
-                             lastI = 0;
+                             sockets[socket]["lastI"] = "0";
                          }
                          if (m != null && m.Equals("@End"))
                              goto case "end";
@@ -160,17 +171,17 @@ namespace raupjc_obg.Controllers
                              goto case "end";
 
                          m = game.RunBehaviour(game.Players[game.Players.Keys.ToList()[game.WhosTurn()]].CurrentEvent,
-                             lastI);
+                             int.Parse(sockets[socket]["lastI"]));
                          if (!m.Equals("@End"))
                          {
-                             lastI = int.Parse(m.Split(new[] { "<!<" }, StringSplitOptions.None)[1]
-                                 .Split(new[] { ">!>" }, StringSplitOptions.None)[0]);
+                             sockets[socket]["lastI"] = m.Split(new[] { "<!<" }, StringSplitOptions.None)[1]
+                                 .Split(new[] { ">!>" }, StringSplitOptions.None)[0];
                              var rgx = new Regex("<!<[0-9]*>!>");
                              m = rgx.Replace(m, "");
                          }
                          else
                          {
-                             lastI = 0;
+                             sockets[socket]["lastI"] = "0";
                          }
                          if (m != null && m.Equals("@End"))
                              goto case "end";
@@ -186,21 +197,26 @@ namespace raupjc_obg.Controllers
 
                          m = game.RunBehaviour(
                              game.Game.Items.Values.FirstOrDefault(ii => ii.Name.Equals(message.Split(':')[1].Trim())),
-                             lastItemI, mm.Length == 0 ? null : mm,
+                             int.Parse(sockets[socket]["lastItemI"]), mm.Length == 0 ? null : mm,
                              game.Players.Keys.ToList().IndexOf(sockets[socket]["username"]));
                          if (!m.Equals("@End"))
                          {
-                             lastItemI = int.Parse(m.Split(new[] { "<!<" }, StringSplitOptions.None)[1]
-                                 .Split(new[] { ">!>" }, StringSplitOptions.None)[0]);
+                             sockets[socket]["lastItemI"] = m.Split(new[] { "<!<" }, StringSplitOptions.None)[1]
+                                 .Split(new[] { ">!>" }, StringSplitOptions.None)[0];
                              var rgx = new Regex("<!<[0-9]*>!>");
                              m = rgx.Replace(m, "");
                          }
                          else
                          {
-                             lastItemI = 0;
+                             sockets[socket]["lastItemI"] = "0";
                          }
                          socket.Send("item:" + message.Split(':')[1].Trim() + ":" + m);
                          goto case "sendReady";
+
+                     case "chat":
+                         sockets.Keys.Where(s => sockets[s]["gamename"].Equals(sockets[socket]["gamename"])).ToList()
+                             .ForEach(s => s.Send(message));
+                         break;
 
                      case "end":
                          game.EndEvent();

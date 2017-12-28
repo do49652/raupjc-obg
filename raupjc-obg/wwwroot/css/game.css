@@ -1,25 +1,33 @@
-﻿html, body { height: 95vh; }
+﻿html, body {
+    height: 95vh;
+}
 
-#logContainer, #itemsContainer {
+body {
+    background-color: #ffffff;
+    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23004798' fill-opacity='0.4' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.panel-transparent {
+    background: none;
+}
+
+.panel-transparent .panel-body {
+    background: rgba(46, 51, 56, 0.1) !important;
+}
+
+.jumbotron {
+    background: rgba(46, 51, 56, 0.1) !important;
+}
+
+#chatInput {
+    background: rgba(200, 200, 200, 0.1) !important;
+}
+
+#logContainer, #itemsContainer, #playersContainer, #chatContainer {
     height: auto;
-    max-height: 95vh;
+    max-height: 47vh;
     overflow-x: auto;
     overflow-y: auto;
-    background-color: #f5f5f5;
-    border: 1px solid #999;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    color: #333;
-    font-family: monospace, monospace;
-    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
-    font-size: 1em;
-    font-size: 13px;
-    line-height: 1.42857143;
-    margin: 0 0 10px;
-    padding: 9.5px;
-    page-break-inside: avoid;
-    word-break: break-all;
-    word-wrap: break-word;
 }
 
 #gameContainer {

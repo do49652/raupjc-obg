@@ -1,8 +1,28 @@
 ﻿<div class="row">
-    <div class="col-md-3">
-        <div id="itemsContainer" class="col-md-offset-1 col-md-11 hidden animated fadeInLeftBig">
-            <div id="items">
-                <span></span><br />
+    <div id="leftContainers" class="col-md-3 panel-group hidden animated fadeInLeftBig ">
+        <div class="row col-md-offset-1 panel panel-primary panel-transparent">
+            <div data-toggle="collapse" href="#itemsContainerCollapsable" class="panel-heading">Items</div>
+            <div id="itemsContainerCollapsable" class="panel-collapse collapse in">
+                <div id="itemsContainer" class="panel-body">
+                    <div id="items">
+                        <span></span><br />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row col-md-offset-1 panel panel-success panel-transparent">
+            <div data-toggle="collapse" href="#chatContainerCollapsable" class="panel-heading">Chat</div>
+            <div id="chatContainerCollapsable" class="panel-collapse collapse in">
+                <div id="chatContainer" class="panel-body">
+                    <div id="chat">
+                        <span></span><br />
+                    </div>
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon">Chat:</span>
+                    <input id="chatInput" class="form-control" type="text" />
+                </div>
             </div>
         </div>
     </div>
@@ -20,18 +40,36 @@
             </div>
 
             <div id="gameGameContainer" class="hidden row animated fadeInUp" style="text-align: center">
-                <div id="playersContainer" class="row">
-                    <pre id="players"></pre>
+                <div id="gameHeaderContainer" class="row">
+                    <div id="gameHeader"></div>
                 </div>
                 <div id="game" class="row"></div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div id="logContainer" class="col-md-offset-1 col-md-11 hidden animated fadeInRightBig">
-            <div id="log">
-                <span></span><br />
+    <div id="rightContainers" class="col-md-3 panel-group hidden animated fadeInRightBig">
+        <div class="col-md-11">
+            <div class="row panel panel-info panel-transparent">
+                <div data-toggle="collapse" href="#logContainerCollapsable" class="panel-heading">Log</div>
+                <div id="logContainerCollapsable" class="panel-collapse collapse in">
+                    <div id="logContainer" class="panel-body">
+                        <div id="log">
+                            <span></span><br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row panel panel-danger panel-transparent">
+                <div data-toggle="collapse" href="#playersContainerCollapsable" class="panel-heading">Players</div>
+                <div id="playersContainerCollapsable" class="panel-collapse collapse in">
+                    <div id="playersContainer" class="panel-body">
+                        <div id="players">
+                            <span></span><br />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

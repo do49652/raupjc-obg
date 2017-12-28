@@ -8,7 +8,8 @@ namespace raupjc_obg.Services
 {
     public interface IServer
     {
-        bool StartServer(string address, Action onOpen, Action onClose,
+        bool StartServer(string address, Action onOpen, Action<Dictionary<IWebSocketConnection, Dictionary<string, string>>, Dictionary<string, GameManager>,
+                IWebSocketConnection> onClose,
             Action<string, Dictionary<IWebSocketConnection, Dictionary<string, string>>, Dictionary<string, GameManager>,
                 IWebSocketConnection, string> onMessage);
     }
