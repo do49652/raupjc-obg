@@ -1,29 +1,31 @@
 ﻿@using raupjc_obg.Models.ContentViewModels
 @model ItemViewModel
 @{
-    ViewData["Title"] = "Event";
+    ViewData["Title"] = "Item";
 }
 
 <h2>@Model.Name</h2>
 <p>@Model.Description</p>
 
 <div class="row">
-    <input type="hidden" id="id" value="@Model.Id"/>
-    <input type="hidden" id="name" value="@Model.Name"/>
+    <input type="hidden" id="id" value="@Model.Id" />
+    <input type="hidden" id="name" value="@Model.Name" />
 
     <div class="col-md-8">
         <h4>Behaviour</h4>
 
-        <div class="form-group">
-            <textarea id="behaviour" rows="32" style="width: 100%;">@Model.Behaviour</textarea>
-        </div>
+        <div class="col-md-offset-1 row behaviourSimpleEditor"></div>
+
+        <br /><br />
+
+        <textarea id="behaviour" class="behaviourEditor" style="width: 100%; height:40vh;">@Model.Behaviour</textarea>
 
         <div align="right">
             <button id="save-item-behaviour" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Save</span></button>
         </div>
     </div>
 
-    <div class="col-md-offset-1 col-md-3">
+    <div id="dependencies" class="col-md-offset-1 col-md-3">
         @{
             var game = new GameViewModel
             {
@@ -41,8 +43,16 @@
     <script src="~/js/contentCreator.js"></script>
     <script src="~/lib/ladda-bootstrap/spin.min.js"></script>
     <script src="~/lib/ladda-bootstrap/ladda.min.js"></script>
+    <script src="~/js/behaviourEditor.js"></script>
 }
 
 @section Styles {
     <link rel="stylesheet" href="~/lib/ladda-bootstrap/ladda-themeless.min.css" />
+    <link rel="stylesheet" href="~/css/game.css" />
 }
+
+<style>
+    body {
+        background: #ffffff;
+    }
+</style>

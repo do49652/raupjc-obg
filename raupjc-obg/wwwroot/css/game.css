@@ -11,9 +11,9 @@ body {
     background: none;
 }
 
-.panel-transparent .panel-body {
-    background: rgba(46, 51, 56, 0.1) !important;
-}
+    .panel-transparent .panel-body {
+        background: rgba(46, 51, 56, 0.1) !important;
+    }
 
 .jumbotron {
     background: rgba(46, 51, 56, 0.1) !important;
@@ -35,4 +35,16 @@ body {
     max-height: 95vh;
     overflow-x: hidden;
     overflow-y: auto;
+}
+
+div.behaviourEditor {
+    background-color: white;
+    -moz-appearance: textfield-multiline;
+    -webkit-appearance: textarea;
+    border: 1px solid gray;
+    font: medium -moz-fixed;
+    font: -webkit-small-control;
+    overflow: auto;
+    padding: 2px;
+    resize: both;
 }
