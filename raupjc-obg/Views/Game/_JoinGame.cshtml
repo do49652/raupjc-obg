@@ -1,11 +1,11 @@
 ﻿@model raupjc_obg.Models.GameViewModels.JoinGameViewModel
 
-<div class="row" style="text-align: center">
+<div id="joinContainer" class="row animated fadeIn" style="text-align: center">
     <div class="col-md-offset-4 col-md-4">
-        <form method="post">
-            <input name="Username" type="text" autocomplete="off" placeholder="Username" class="form-control">
-            <input name="GameName" type="text" autocomplete="off" placeholder="Game name" class="form-control">
-            <input name="Password" type="password" autocomplete="off" placeholder="Password" class="form-control">
+        <form method="post" >
+            <input class="form-control" name="Username" type="text" autocomplete="off" placeholder="Username">
+            <input class="form-control" name="GameName" type="text" autocomplete="off" placeholder="Game name">
+            <input class="form-control" name="Password" type="password" autocomplete="new-password" placeholder="Password">
             <div align="right">
                 <button type="submit" class="btn btn-primary">Join</button>
             </div>

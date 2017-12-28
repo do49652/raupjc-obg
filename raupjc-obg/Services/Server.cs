@@ -2,13 +2,21 @@
 using System.Collections.Generic;
 using Fleck;
 using raupjc_obg.Game;
+using raupjc_obg.Repositories;
 
 namespace raupjc_obg.Services
 {
     public class Server : IServer
     {
+        public string ConnectionString { get; set; }
+
+        public Server(string cnnstr)
+        {
+            ConnectionString = cnnstr;
+        }
+
         public bool StartServer(string address, Action onOpen, Action onClose,
-            Action<Dictionary<IWebSocketConnection, Dictionary<string, string>>, Dictionary<string, GameManager>,
+            Action<string, Dictionary<IWebSocketConnection, Dictionary<string, string>>, Dictionary<string, GameManager>,
                 IWebSocketConnection, string> onMessage)
         {
             var sockets = new Dictionary<IWebSocketConnection, Dictionary<string, string>>();
@@ -28,7 +36,7 @@ namespace raupjc_obg.Services
                         onClose.Invoke();
                         sockets.Remove(socket);
                     };
-                    socket.OnMessage = message => onMessage(sockets, games, socket, message);
+                    socket.OnMessage = message => onMessage(ConnectionString, sockets, games, socket, message);
                 });
             }
             catch (Exception e)

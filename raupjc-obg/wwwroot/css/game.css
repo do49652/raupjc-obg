@@ -1,8 +1,8 @@
-﻿html, body { height: 80vh; }
+﻿html, body { height: 95vh; }
 
 #logContainer, #itemsContainer {
     height: auto;
-    max-height: 80vh;
+    max-height: 95vh;
     overflow-x: auto;
     overflow-y: auto;
     background-color: #f5f5f5;
@@ -23,8 +23,8 @@
 }
 
 #gameContainer {
-    height: 80vh;
-    max-height: 80vh;
+    height: 95vh;
+    max-height: 95vh;
     overflow-x: hidden;
     overflow-y: auto;
 }

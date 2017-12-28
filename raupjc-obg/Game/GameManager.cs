@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using raupjc_obg.Game.Components;
-using raupjc_obg.Game.Content;
 
 namespace raupjc_obg.Game
 {

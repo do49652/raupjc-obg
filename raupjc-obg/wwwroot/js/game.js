@@ -1,30 +1,44 @@
-﻿var start = function () {
+﻿var startGame = function (gametostart) {};
+
+var start = function () {
 	var inc = document.getElementById("joined");
 	var wsImpl = window.WebSocket || window.MozWebSocket;
 	window.ws = new wsImpl("ws://192.168.1.5:8181");
 
+	var admin = false;
 	var username = document.getElementById("username").innerHTML;
 	var gamename = document.getElementById("gamename").innerHTML;
 	var gameStarted = false;
+
+	startGame = function (gametostart) {
+		$('[id="startGameButton"]').each(function () {
+			Ladda.create(this).start();
+		});
+		ws.send('start:' + gametostart);
+	}
 
 	ws.onmessage = function (evt) {
 		var message = evt.data;
 
 		if (!gameStarted) {
 			if (message == "admin") {
-				document.getElementById("startgame").innerHTML = "<button class='btn btn-primary' onclick=\"ws.send('start');\">Start game</button>";
+				admin = true;
+				document.getElementById("startgame").classList.remove("hidden");
 			} else if (message == "wrong-password") {
 				inc.innerHTML = "wrong password";
 			} else if (message == "username-taken") {
 				inc.innerHTML = "username taken";
 			} else if (message == "start") {
 				document.getElementById("lobby").classList.add("hidden");
-				document.getElementById("title").innerHTML = gamename;
-				document.getElementById("desc").innerHTML = "";
+				document.getElementById("jumbotron").classList.add("hidden");
 				ws.send("ready");
 				gameStarted = true;
+				document.getElementById("itemsContainer").classList.remove("hidden");
+				document.getElementById("logContainer").classList.remove("hidden");
 				document.getElementById("gameGameContainer").classList.remove("hidden");
 			} else {
+				if (!admin)
+					document.getElementById("startgame").innerHTML = "";
 				inc.innerHTML = message;
 				document.getElementById("desc").innerHTML = "Waiting for all players to join.";
 			}

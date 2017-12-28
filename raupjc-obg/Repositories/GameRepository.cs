@@ -152,7 +152,7 @@ namespace raupjc_obg.Repositories
 
             oGame.Items = updatedItems;
 
-            if (newGame && !_dbContext.Games.Contains(oGame))
+            if (newGame)
                 _dbContext.Games.Add(oGame);
             await _dbContext.SaveChangesAsync();
             return true;

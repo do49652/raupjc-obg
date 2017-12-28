@@ -84,6 +84,8 @@ namespace raupjc_obg.Models.GameContentModels
 
             SetEvents?.Split('\n').ToList().ForEach(setEvent =>
             {
+                if (!setEvent.Contains(":"))
+                    return;
                 var se = game.LoadedEventModels.FirstOrDefault(e => e.Name.Equals(setEvent.Split(':')[1]));
                 if (se != null)
                     game.SetEvents[int.Parse(setEvent.Split(':')[0])] = se;

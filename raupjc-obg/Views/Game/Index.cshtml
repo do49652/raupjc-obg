@@ -10,10 +10,13 @@
     <title>@ViewData["Title"] - raupjc_obg</title>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="~/css/site.min.css" />
+    <!--<link rel="stylesheet" href="~/css/site.min.css" />-->
     <link rel="stylesheet" href="~/css/game.css" />
+    <script src="~/lib/ladda-bootstrap/spin.min.js"></script>
+    <script src="~/lib/ladda-bootstrap/ladda.min.js"></script>
+    <link rel="stylesheet" href="~/lib/ladda-bootstrap/ladda-themeless.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
 </head>
 
 <body>
@@ -24,11 +27,9 @@
 
         <div id="clipboard" class="hidden"></div>
 
-        <div style="text-align: center">
+        <div id="jumbotron" class="jumbotron" style="text-align: center">
             <h2 id="title">Play</h2>
-            <p>
-                <i id="desc">Here you can join an existing game or create your own.</i>
-            </p>
+            <p><i id="desc">Here you can join an existing game or create your own.</i></p>
         </div>
         <br>
 
@@ -38,7 +39,7 @@
         }
         else
         {
-            @await Html.PartialAsync("_Play")
+            @await Html.PartialAsync("_Play", Model)
         }
     </div>
 </body>

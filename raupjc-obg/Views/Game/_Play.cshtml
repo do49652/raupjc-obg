@@ -1,25 +1,39 @@
 ﻿<div class="row">
-    <div id="itemsContainer" class="col-md-3">
-        <div id="items">
-        </div>
-    </div>
-
-    <div id="gameContainer" class="col-md-6" style="text-align: center">
-        <div id="lobby" class="row" style="text-align: center">
-            <div id="joined" class="row"></div>
-            <div id="startgame" class="row"></div>
-        </div>
-
-        <div id="gameGameContainer" class="hidden row" style="text-align: center">
-            <div id="playersContainer" class="row">
-                <pre id="players"></pre>
+    <div class="col-md-3">
+        <div id="itemsContainer" class="col-md-offset-1 col-md-11 hidden animated fadeInLeftBig">
+            <div id="items">
+                <span></span><br />
             </div>
-            <div id="game" class="row"></div>
         </div>
     </div>
 
-    <div id="logContainer" class="col-md-3">
-        <div id="log"></div>
+    <div class="col-md-6">
+        <div id="gameContainer" class="col-md-offset-1 col-md-10 animated fadeIn" style="text-align: center">
+            <div id="lobby" class="row" style="text-align: center">
+                <div id="joined" class="row"></div>
+                <div id="startgame" class="row hidden">
+                    @foreach (var g in Model.gameNames)
+                    {
+                        <button id='startGameButton' class='btn btn-primary ladda-button' data-style='slide-left' onclick="startGame('@(g)');"><span class='ladda-label'>@(g)</span></button>
+                    }
+                </div>
+            </div>
+
+            <div id="gameGameContainer" class="hidden row animated fadeInUp" style="text-align: center">
+                <div id="playersContainer" class="row">
+                    <pre id="players"></pre>
+                </div>
+                <div id="game" class="row"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div id="logContainer" class="col-md-offset-1 col-md-11 hidden animated fadeInRightBig">
+            <div id="log">
+                <span></span><br />
+            </div>
+        </div>
     </div>
 </div>
 
@@ -34,5 +48,6 @@
 
     </div>
 </div>
+
 
 <script type="text/javascript" src="js/game.js"></script>
