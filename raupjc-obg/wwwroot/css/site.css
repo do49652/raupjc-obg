@@ -21,15 +21,49 @@
 
 /* Make .svg files in the carousel display properly in older browsers */
 
-.carousel-inner .item img[src$=".svg"] { width: 100%; }
+.carousel-inner .item img[src$=".svg"] {
+    width: 100%;
+}
 
 /* QR code generator */
 
-#qrCode { margin: 15px; }
+#qrCode {
+    margin: 15px;
+}
 
 /* Hide/rearrange for smaller screens */
 
 @media screen and (max-width: 767px) {
     /* Hide captions */
-    .carousel-caption { display: none; }
+    .carousel-caption {
+        display: none;
+    }
+}
+
+.collapse {
+    visibility: hidden;
+    max-height:auto;
+}
+
+    .collapse.in {
+        visibility: visible;
+        width: auto;
+        display: inline-block;
+        max-height: auto;
+    }
+
+.collapsing.width {
+    position: relative;
+    overflow: hidden;
+    -webkit-transition-property: height, visibility;
+    transition-property: height, visibility;
+    -webkit-transition-duration: 0.35s;
+    transition-duration: 0.35s;
+    -webkit-transition-timing-function: ease;
+    transition-timing-function: ease;
+    -webkit-transition-property: width, visibility;
+    transition-property: width, visibility;
+    width: 0;
+    height: inherit;
+    display: inline-block;
 }

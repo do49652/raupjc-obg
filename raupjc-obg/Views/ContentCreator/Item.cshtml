@@ -14,11 +14,15 @@
     <div class="col-md-8">
         <h4>Behaviour</h4>
 
-        <div class="col-md-offset-1 row behaviourSimpleEditor"></div>
+        <ul class="nav nav-pills">
+            <li class="active"><a data-toggle="pill" href="#behaviourSimpleEditor">Editor</a></li>
+            <li><a data-toggle="pill" href="#behaviour">Text editor</a></li>
+        </ul>
 
-        <br /><br />
-
-        <textarea id="behaviour" class="behaviourEditor" style="width: 100%; height:40vh;">@Model.Behaviour</textarea>
+        <div class="tab-content">
+            <div id="behaviourSimpleEditor" class="col-md-offset-1 row behaviourSimpleEditor tab-pane fade in active"></div>
+            <textarea id="behaviour" class="behaviourEditor tab-pane fade" style="width: 100%; height:40vh;">@Model.Behaviour</textarea>
+        </div>
 
         <div align="right">
             <button id="save-item-behaviour" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Save</span></button>
