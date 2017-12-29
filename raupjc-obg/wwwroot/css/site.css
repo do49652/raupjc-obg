@@ -42,7 +42,7 @@
 
 .collapse {
     visibility: hidden;
-    max-height:auto;
+    max-height: auto;
 }
 
     .collapse.in {
@@ -66,4 +66,9 @@
     width: 0;
     height: inherit;
     display: inline-block;
+}
+
+.editable-input input {
+    resize: horizontal;
+    min-width: 300px;
 }

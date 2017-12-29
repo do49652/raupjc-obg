@@ -31,7 +31,6 @@ Scenes:
 Behaviour:
  @Buy
  @Move
- @Use		WIP
  @Log+
  @Log
  @Goto

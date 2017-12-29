@@ -1,6 +1,14 @@
 ﻿$(document).ready(function () {
 	$("#save-item-behaviour, #save-event-behaviour").off("click").click(function () {
 		var l = Ladda.create(this);
+		var btn = $(this);
+
+		var behaviour = $("#behaviour").val().split("\n");
+		var behaviourTrimmed = "";
+		for (let i = 0; i < behaviour.length; i++)
+			behaviourTrimmed += "\n" + behaviour[i].trim();
+		behaviourTrimmed = behaviourTrimmed.substring(1);
+
 		$.ajax({
 			type: "POST",
 			url: this.id == "save-item-behaviour" ? "SaveItemBehaviour" : "SaveEventBehaviour",
@@ -10,11 +18,13 @@
 			data: {
 				Id: $("#id").val(),
 				Name: $("#name").val(),
-				Behaviour: $("#behaviour").val()
+				Behaviour: behaviourTrimmed
 			},
 			dataType: "json",
 			success: function (res) {
 				l.stop();
+				btn.text("Saved");
+				btn.prop("disabled", true);
 			}
 		});
 	});
@@ -106,6 +116,11 @@
 				l.stop();
 			}
 		});
+	});
+
+	$("#behaviour").keypress(function () {
+		$("#save-item-behaviour, #save-event-behaviour").text("Save");
+		$("#save-item-behaviour, #save-event-behaviour").prop("disabled", false);
 	});
 
 });
