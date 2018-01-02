@@ -156,10 +156,10 @@
 		var actionButtons = '';
 
 		if (previousActions.length > 0 && previousActions[0].startsWith("Choice: "))
-			return '<button class="btn btn-default newAction">New choice</button>';
+			return '<button class="btn btn-default newAction">New choice</button><br>';
 
 		if (previousActions.length == 1 && ((previousActions[0].indexOf("%") == -1 && previousActions[0].indexOf(":") == -1) || previousActions[previousActions.length - 1].startsWith("NoEvent: ") || previousActions[previousActions.length - 1].startsWith("Monologue: ") || previousActions[previousActions.length - 1].startsWith("Buy: ") || previousActions[previousActions.length - 1] == "Shop"))
-			return '<button class="btn btn-default newAction">Next row</button>';
+			return '<button class="btn btn-default newAction">Next row</button><br>';
 
 		if (previousActions.length == 0)
 			actionButtons += (window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1) == "Item" ? '<button class="btn btn-default newAction">OnEvent</button><button class="btn btn-default newAction">NoEvent</button>' : '')
@@ -169,7 +169,7 @@
 			actionButtons += '<button class="btn btn-default newAction">New choice</button>';
 		for (let i = 0; i < previousActions.length; i++) {
 			if (previousActions[i].startsWith("Monologue") || previousActions[i].startsWith("Buy"))
-				return actionButtons + '<button class="btn btn-default newAction">Next row</button>';
+				return actionButtons + '<button class="btn btn-default newAction">Next row</button><br>';
 		}
 
 		actionButtons += '<button class="btn btn-default newAction">Move</button>';
@@ -181,7 +181,7 @@
 		actionButtons += '<button class="btn btn-default newAction">Remove</button>';
 		actionButtons += '<button class="btn btn-default newAction">Money</button>';
 
-		actionButtons += '<button class="btn btn-default newAction">Next row</button>';
+		actionButtons += '<button class="btn btn-default newAction">Next row</button><br>';
 		return actionButtons;
 	}
 

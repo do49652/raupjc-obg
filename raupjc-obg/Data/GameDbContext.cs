@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Data.Entity;
 using raupjc_obg.Models.GameContentModels;
+using raupjc_obg.Models.OtherModels;
 
 namespace raupjc_obg.Data
 {
@@ -9,6 +10,7 @@ namespace raupjc_obg.Data
         public IDbSet<GameModel> Games { get; set; }
         public IDbSet<EventModel> Events { get; set; }
         public IDbSet<ItemModel> Items { get; set; }
+        public IDbSet<Review> Reviews { get; set; }
 
         public GameDbContext(string cnnstr) : base(cnnstr)
         {
@@ -49,6 +51,12 @@ namespace raupjc_obg.Data
             modelBuilder.Entity<ItemModel>().Property(i => i.Category);
             modelBuilder.Entity<ItemModel>().Property(i => i.Behaviour);
             modelBuilder.Entity<ItemModel>().HasRequired(i => i.Game).WithMany(g => g.Items);
+
+            modelBuilder.Entity<Review>().HasKey(r => r.Id);
+            modelBuilder.Entity<Review>().Property(r => r.UserId).IsRequired();
+            modelBuilder.Entity<Review>().Property(r => r.Rating);
+            modelBuilder.Entity<Review>().Property(r => r.Comment);
+            modelBuilder.Entity<Review>().HasRequired(r => r.Game);
 
         }
     }

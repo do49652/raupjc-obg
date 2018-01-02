@@ -123,4 +123,26 @@
 		$("#save-item-behaviour, #save-event-behaviour").prop("disabled", false);
 	});
 
+	$("#publish-game").off("click").click(function () {
+		var l = Ladda.create(this);
+		var obj = {
+			Id: $("#id").val(),
+			Name: $("#name").val()
+		};
+
+		$.ajax({
+			type: "POST",
+			url: "../PublishGame",
+			beforeSend: function () {
+				l.start();
+			},
+			data: obj,
+			dataType: "json",
+			success: function (res) {
+				if (res)
+					window.location = "../../Content";
+				l.stop();
+			}
+		});
+	});
 });

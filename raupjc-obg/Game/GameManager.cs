@@ -24,6 +24,8 @@ namespace raupjc_obg.Game
         public int Turn { get; set; }
         public int LastRoll { get; set; }
 
+        public int FinishingSpace { get; set; }
+
         public List<string> Log { get; set; }
 
         public void StartGame(Components.Game game)

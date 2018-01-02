@@ -66,7 +66,7 @@ namespace raupjc_obg
             {
                 routes.MapRoute(
                     "default",
-                    "{controller=Content}/{action=Index}/{id?}");
+                    "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

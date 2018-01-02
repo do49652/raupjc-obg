@@ -3,12 +3,22 @@
 <div id="joinContainer" class="row animated fadeIn" style="text-align: center">
     <div class="col-md-offset-4 col-md-4">
         <form method="post" >
-            <input class="form-control" name="Username" type="text" autocomplete="off" placeholder="Username">
+            <input class="form-control" name="Username" type="text" autocomplete="off" placeholder="Username" value="@Model.Username">
             <input class="form-control" name="GameName" type="text" autocomplete="off" placeholder="Game name">
             <input class="form-control" name="Password" type="password" autocomplete="new-password" placeholder="Password">
             <div align="right">
-                <button type="submit" class="btn btn-primary">Join</button>
+                <button id="joinButton" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Join</span></button>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    $(function () {
+        $('#joinButton').click(function () {
+            var l = Ladda.create(this);
+            l.start();
+            $(this).parent().parent().submit();
+        });
+    });
+</script>

@@ -1,4 +1,6 @@
-﻿<div class="row">
+﻿@using raupjc_obg.Models.OtherModels
+@model raupjc_obg.Models.GameViewModels.JoinGameViewModel
+<div class="row">
     <div id="leftContainers" class="col-md-3 panel-group hidden animated fadeInLeftBig ">
         <div class="row col-md-offset-1 panel panel-primary panel-transparent">
             <div data-toggle="collapse" href="#itemsContainerCollapsable" class="panel-heading">Items</div>
@@ -27,15 +29,43 @@
         </div>
     </div>
 
-    <div class="col-md-6">
-        <div id="gameContainer" class="col-md-offset-1 col-md-10 animated fadeIn" style="text-align: center">
+    <div class="col-md-offset-3 col-md-6">
+        <div id="gameContainer" class="col-md-12 animated fadeIn" style="text-align: center">
             <div id="lobby" class="row" style="text-align: center">
-                <div id="joined" class="row"></div>
+                <div id="joined" class="row"></div><br />
                 <div id="startgame" class="row hidden">
-                    @foreach (var g in Model.gameNames)
-                    {
-                        <button id='startGameButton' class='btn btn-primary ladda-button' data-style='slide-left' onclick="startGame('@(g)');"><span class='ladda-label'>@(g)</span></button>
-                    }
+                    <div class="panel-group col-md-10" id="accordion">
+                        @{
+                            var i = 0;
+                            foreach (var g in Model.reviews.Select(r => r.Game).ToList())
+                            {
+                                i++;
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" align="left">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse@(i)">@(g.Name)</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse@(i)" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <p align="left"><i>@(g.Description)</i></p>
+                                            <div class="row" align="right">
+                                                <button id='startGameButton' class='btn btn-primary ladda-button' data-style='slide-left' onclick="startGame('@(g.Name)');"><span class='ladda-label'>Play @(g.Name)</span></button>
+                                                <button class='btn btn-link'></button>
+                                            </div>
+                                            @foreach (Review r in Model.reviews.Where(r => r.Game.Name.Equals(g.Name)).ToList())
+                                            {
+                                                if (r.Comment != null)
+                                                {
+                                                    <p align="left">@r.Comment</p>
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
                 </div>
             </div>
 
@@ -88,4 +118,4 @@
 </div>
 
 
-<script type="text/javascript" src="js/game.js"></script>
+<script type="text/javascript" src="~/js/game.js"></script>

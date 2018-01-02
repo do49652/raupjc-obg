@@ -10,11 +10,14 @@ var start = function () {
 	var gamename = document.getElementById("gamename").innerHTML;
 	var gameStarted = false;
 
+	var thegamename;
+
 	startGame = function (gametostart) {
 		$('[id="startGameButton"]').each(function () {
 			Ladda.create(this).start();
 		});
 		ws.send('start:' + gametostart);
+		thegamename = gametostart;
 	}
 
 	ws.onmessage = function (evt) {
@@ -33,6 +36,7 @@ var start = function () {
 				document.getElementById("jumbotron").classList.add("hidden");
 				ws.send("ready");
 				gameStarted = true;
+				document.getElementById("gameGameContainer").parentElement.parentElement.classList.remove("col-md-offset-3");
 				document.getElementById("leftContainers").classList.remove("hidden");
 				document.getElementById("rightContainers").classList.remove("hidden");
 				document.getElementById("gameGameContainer").classList.remove("hidden");
@@ -119,6 +123,9 @@ var start = function () {
 		} else {
 			var game = JSON.parse(message);
 
+			var t = parseInt(game["Turn"]) % Object.keys(game["Players"]).length;
+			var playingUsername = game["Players"][Object.keys(game["Players"])[t]]["Username"];
+
 			$(function () {
 				$("#clipboard").text(message);
 
@@ -140,138 +147,133 @@ var start = function () {
 					log += '<button class="btn btn-default" id="item' + (i + 1) + '">' + game["Players"][username]["Items"][i]["Name"] + "</button>";
 
 				$("#items").text("").append(log);
-			});
 
-			var t = parseInt(game["Turn"]) % Object.keys(game["Players"]).length;
-			var playingUsername = game["Players"][Object.keys(game["Players"])[t]]["Username"];
-
-			var sceneManager = function () {
-				if (game["Scene"] == "roll") {
+				if (game["Scene"] == "end")
+					$("#game").text("").append('<form action="game/rate" method="post"><input type="hidden" name="GameName" value="' + thegamename + '"/><p id="message"></p><textarea name="Comment" style="width:80%;"></textarea><br><button type="submit">Submit</button></form>');
+				else if (game["Scene"] == "choice")
+					$("#game").text("").append('<p id="message"></p><button class="btn btn-info" id="proceed1">Choice1</button><button class="btn btn-info" id="proceed2">Choice2</button><button class="btn btn-info" id="proceed3">Choice3</button><button class="btn btn-info" id="proceed4">Choice4</button><button class="btn btn-info" id="proceed5">Choice5</button><button class="btn btn-info" id="proceed6">Choice6</button><button class="btn btn-info" id="proceed7">Choice7</button><button class="btn btn-info" id="proceed8">Choice8</button>');
+				else if (game["Scene"] == "event")
+					$("#game").text("").append('<p id="message"></p><button class="btn btn-warning" id="proceed">Continue</button>');
+				else if (game["Scene"] == "roll")
+					$("#game").text("").append('<button class="btn btn-primary" id="rollDice">Roll</button>');
+				else if (game["Scene"] == "rolled")
+					$("#game").text("").append('<p id="message"></p><button class="btn btn-primary" id="proceed">Move</button>');
+				else if (game["Scene"] == "shop")
+					$("#game").text("").append('<p id="message"></p><div class="row"><div class="col-md-6"><button class="btn btn-info" id="proceed1">Item1</button></div><div class="col-md-6"><button class="btn btn-info" id="proceed2">Item2</button></div></div><div class="row"><div class="col-md-6"><button class="btn btn-info" id="proceed3">Item3</button></div><div class="col-md-6"><button class="btn btn-info" id="proceed4">Item4</button></div></div><div class="row"><div class="col-md-6"><button class="btn btn-info" id="proceed5">Item5</button></div><div class="col-md-6"><button class="btn btn-info" id="proceed6">Item6</button></div></div><div class="row"><div class="col-md-6"><button class="btn btn-info" id="proceed7">Item7</button></div><div class="col-md-6"><button class="btn btn-info" id="proceed8">Item8</button></div></div><div class="row"><button class="btn btn-warning" id="cancel">Cancel</button></div>');
+			}).promise().done().then(function () {
+				if (game["Scene"] == "end") {
+					$("#message").text("").append("Rate & comment the game");
+				} else if (game["Scene"] == "roll") {
 					if (playingUsername == username) {
-						$(function () {
-							$("#rollDice").attr("disabled", false);
+						$("#rollDice").attr("disabled", false);
 
-							$("#rollDice").off("click").click(function () {
-								ws.send("roll");
+						$("#rollDice").off("click").click(function () {
+							ws.send("roll");
 
-								$("#rollDice").attr("disabled", true);
-								$("#rollDice").off("click");
-							});
-						});
-					} else {
-						$(function () {
 							$("#rollDice").attr("disabled", true);
 							$("#rollDice").off("click");
 						});
+					} else {
+						$("#rollDice").attr("disabled", true);
+						$("#rollDice").off("click");
 					}
 				} else if (game["Scene"] == "choice") {
-					$(function () {
-						var title = game["Message"].split("\n")[0].split("->")[1].trim();
-						var choices = [];
+					var title = game["Message"].split("\n")[0].split("->")[1].trim();
+					var choices = [];
 
-						for (let i = 1; i < game["Message"].split("\n").length; i++) {
-							choices.push({
-								n: parseInt(game["Message"].split("\n")[i].split("->")[0].replace("@C", "").trim()),
-								text: game["Message"].split("\n")[i].split("->")[1].split(";")[0].trim(),
-								action: game["Message"].split("\n")[i].substring(game["Message"].split("\n")[i].indexOf(";") + 1).trim()
-							});
-						}
-
-						$("#message").text("").append(title);
-
-						for (let i = 1; i <= 8; i++) {
-							$("#proceed" + i).addClass("hidden");
-							$("#proceed" + i).attr("disabled", true);
-							$("#proceed" + i).off("click");
-						}
-
-						for (i in choices) {
-							$("#proceed" + choices[i].n).removeClass("hidden");
-							$("#proceed" + choices[i].n).text("").append(choices[i].text);
-							if (playingUsername == username) {
-								$("#proceed" + choices[i].n).data("move", choices[i].action);
-								$("#proceed" + choices[i].n).attr("disabled", false);
-								$("#proceed" + choices[i].n).off("click").click(function () {
-									ws.send("move:" + $(this).data("move"));
-								});
-							}
-						}
-					});
-				} else if (game["Scene"] == "shop") {
-					$(function () {
-						var title = game["Message"];
-						var items = [];
-
-						for (let i = 0; i < Object.keys(game["Players"][playingUsername]["CurrentEvent"]["Items"]).length; i++) {
-							items.push({
-								name: Object.keys(game["Players"][playingUsername]["CurrentEvent"]["Items"])[i],
-								description: game["Players"][playingUsername]["CurrentEvent"]["Items"][Object.keys(game["Players"][playingUsername]["CurrentEvent"]["Items"])[i]][0]["Description"],
-								price: parseFloat(game["Players"][playingUsername]["CurrentEvent"]["Items"][Object.keys(game["Players"][playingUsername]["CurrentEvent"]["Items"])[i]][1])
-							});
-						}
-
-						$("#message").text("").append(title);
-
-						for (let i = 1; i <= 8; i++) {
-							$("#proceed" + i).addClass("hidden");
-							$("#proceed" + i).attr("disabled", true);
-							$("#proceed" + i).off("click");
-						}
-
-						for (i in items) {
-							i = parseInt(i);
-							$("#proceed" + (i + 1)).removeClass("hidden");
-							$("#proceed" + (i + 1)).text("").append(items[i].name + " <i>(Cost: " + items[i].price + ")</i>");
-							if (playingUsername == username &&
-								items[i].price <= parseFloat(game["Players"][username]["Money"])) {
-								$("#proceed" + (i + 1)).data("move", "@Buy -> " + items[i].name);
-								$("#proceed" + (i + 1)).attr("disabled", false);
-								$("#proceed" + (i + 1)).off("click").click(function () {
-									ws.send("move:" + $(this).data("move"));
-								});
-							}
-						}
-
-						$("#cancel").addClass("hidden");
-						$("#cancel").attr("disabled", true);
-						$("#cancel").off("click");
-						if (playingUsername == username) {
-							$("#cancel").removeClass("hidden");
-							$("#cancel").attr("disabled", false);
-							$("#cancel").text("Cancel");
-							$("#cancel").off("click").click(function () {
-								ws.send("move");
-							});
-						}
-					});
-				} else {
-					$(function () {
-						if (game["Scene"] == "rolled")
-							$("#message").text("You rolled " + game["LastRoll"] + ".");
-						else if (game["Scene"] == "event")
-							$("#message").text("").append(game["Message"]);
-
-						if (playingUsername == username) {
-							$("#proceed").off("click").click(function () {
-								ws.send("move");
-							});
-						} else {
-							$("#proceed").attr("disabled", true);
-							$("#proceed").off("click");
-						}
-					});
-				}
-
-				$(function () {
-					for (let i = 0; i < game["Players"][username]["Items"].length; i++) {
-						$("#item" + (i + 1)).off("click").click(function () {
-							ws.send("item:" + game["Players"][username]["Items"][i]["Name"]);
+					for (let i = 1; i < game["Message"].split("\n").length; i++) {
+						choices.push({
+							n: parseInt(game["Message"].split("\n")[i].split("->")[0].replace("@C", "").trim()),
+							text: game["Message"].split("\n")[i].split("->")[1].split(";")[0].trim(),
+							action: game["Message"].split("\n")[i].substring(game["Message"].split("\n")[i].indexOf(";") + 1).trim()
 						});
 					}
-				});
-			};
 
-			$("#game").load("/html/" + game["Scene"] + ".html", sceneManager);
+					$("#message").text("").append(title);
+
+					for (let i = 1; i <= 8; i++) {
+						$("#proceed" + i).addClass("hidden");
+						$("#proceed" + i).attr("disabled", true);
+						$("#proceed" + i).off("click");
+					}
+
+					for (i in choices) {
+						$("#proceed" + choices[i].n).removeClass("hidden");
+						$("#proceed" + choices[i].n).text("").append(choices[i].text);
+						if (playingUsername == username) {
+							$("#proceed" + choices[i].n).data("move", choices[i].action);
+							$("#proceed" + choices[i].n).attr("disabled", false);
+							$("#proceed" + choices[i].n).off("click").click(function () {
+								ws.send("move:" + $(this).data("move"));
+							});
+						}
+					}
+				} else if (game["Scene"] == "shop") {
+					var title = game["Message"];
+					var items = [];
+
+					for (let i = 0; i < Object.keys(game["Players"][playingUsername]["CurrentEvent"]["Items"]).length; i++) {
+						items.push({
+							name: Object.keys(game["Players"][playingUsername]["CurrentEvent"]["Items"])[i],
+							description: game["Players"][playingUsername]["CurrentEvent"]["Items"][Object.keys(game["Players"][playingUsername]["CurrentEvent"]["Items"])[i]][0]["Description"],
+							price: parseFloat(game["Players"][playingUsername]["CurrentEvent"]["Items"][Object.keys(game["Players"][playingUsername]["CurrentEvent"]["Items"])[i]][1])
+						});
+					}
+
+					$("#message").text("").append(title);
+
+					for (let i = 1; i <= 8; i++) {
+						$("#proceed" + i).addClass("hidden");
+						$("#proceed" + i).attr("disabled", true);
+						$("#proceed" + i).off("click");
+					}
+
+					for (i in items) {
+						i = parseInt(i);
+						$("#proceed" + (i + 1)).removeClass("hidden");
+						$("#proceed" + (i + 1)).text("").append(items[i].name + " <i>(Cost: " + items[i].price + ")</i>");
+						if (playingUsername == username &&
+							items[i].price <= parseFloat(game["Players"][username]["Money"])) {
+							$("#proceed" + (i + 1)).data("move", "@Buy -> " + items[i].name);
+							$("#proceed" + (i + 1)).attr("disabled", false);
+							$("#proceed" + (i + 1)).off("click").click(function () {
+								ws.send("move:" + $(this).data("move"));
+							});
+						}
+					}
+
+					$("#cancel").addClass("hidden");
+					$("#cancel").attr("disabled", true);
+					$("#cancel").off("click");
+					if (playingUsername == username) {
+						$("#cancel").removeClass("hidden");
+						$("#cancel").attr("disabled", false);
+						$("#cancel").text("Cancel");
+						$("#cancel").off("click").click(function () {
+							ws.send("move");
+						});
+					}
+				} else {
+					if (game["Scene"] == "rolled")
+						$("#message").text("You rolled " + game["LastRoll"] + ".");
+					else if (game["Scene"] == "event")
+						$("#message").text("").append(game["Message"]);
+
+					if (playingUsername == username) {
+						$("#proceed").off("click").click(function () {
+							ws.send("move");
+						});
+					} else {
+						$("#proceed").attr("disabled", true);
+						$("#proceed").off("click");
+					}
+				}
+				for (let i = 0; i < game["Players"][username]["Items"].length; i++) {
+					$("#item" + (i + 1)).off("click").click(function () {
+						ws.send("item:" + game["Players"][username]["Items"][i]["Name"]);
+					});
+				}
+			});
 		}
 	};
 

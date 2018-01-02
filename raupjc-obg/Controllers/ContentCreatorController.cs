@@ -227,6 +227,14 @@ namespace raupjc_obg.Controllers
             return await _gameRepository.Add(game);
         }
 
+        [HttpPost]
+        public async Task<bool> PublishGame(GameViewModel gameVm)
+        {
+            var game = await _gameRepository.GetGameById(Guid.Parse(gameVm.Id)) ?? await _gameRepository.GetGameByName(gameVm.Name);
+            game.Private = false;
+            return await _gameRepository.Add(game);
+        }
+
 
     }
 }

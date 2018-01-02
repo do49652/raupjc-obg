@@ -20,8 +20,8 @@
         </ul>
 
         <div class="tab-content">
-            <div id="behaviourSimpleEditor" class="col-md-offset-1 row behaviourSimpleEditor tab-pane fade in active"></div>
-            <textarea id="behaviour" class="behaviourEditor tab-pane fade" style="width: 100%; height:40vh;">@Model.Behaviour</textarea>
+            <div id="behaviourSimpleEditor" class="col-xs-offset-1 row behaviourSimpleEditor tab-pane fade in active"></div>
+            <textarea id="behaviour" class="form-control behaviourEditor tab-pane fade" style="width: 100%; height:40vh;">@Model.Behaviour</textarea>
         </div>
 
         <div align="right">
@@ -44,21 +44,21 @@
 </div>
 
 @section Scripts{
-    <script src="~/js/contentCreator.js"></script>
-    <script src="~/lib/ladda-bootstrap/spin.min.js"></script>
-    <script src="~/lib/ladda-bootstrap/ladda.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+<script src="~/js/contentCreator.js"></script>
     <script src="~/js/behaviourEditor.js"></script>
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/lib/ladda-bootstrap/ladda-themeless.min.css" />
-    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
-    <link rel="stylesheet" href="~/css/game.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
 }
 
-<style>
-    body {
-        background: #ffffff;
-    }
-</style>
+
+<script>
+    $(function () {
+        $('#homePill').removeClass("active");
+        $('#contentPill').addClass("active");
+        $('#contentPill > a').text("@Model.GameName")
+        $('#contentPill > a').attr("href", document.referrer)
+    });
+</script>

@@ -4,11 +4,29 @@
 <div class="container">
     <h1>Your Games</h1>
     <div class="row">
-        @foreach (var game in Model)
-        {
-            <a class="btn btn-default" asp-controller="ContentCreator" asp-action="Game" asp-route-id="@game.Id">@game.Name</a><br />
-        }
-        <br />
-        <a class="btn btn-info" asp-controller="ContentCreator" asp-action="Index">New Game</a>
+        <div class="col-md-6">
+            <h4>Public games</h4>
+            @foreach (var game in Model.Where(g => !g.Private).ToList())
+            {
+                <a class="btn btn-default" asp-controller="ContentCreator" asp-action="Game" asp-route-id="@game.Id">@game.Name</a><br />
+            }
+        </div>
+
+        <div class="col-md-6">
+            <h4>Private games</h4>
+            @foreach (var game in Model.Where(g => g.Private).ToList())
+            {
+                <a class="btn btn-default" asp-controller="ContentCreator" asp-action="Game" asp-route-id="@game.Id">@game.Name</a><br />
+            }
+            <br />
+            <a class="btn btn-info" asp-controller="ContentCreator" asp-action="Index">New Game</a>
+        </div>
     </div>
 </div>
+
+
+<script>
+    $(function () {
+        $('#contentPill').addClass("active");
+    });
+</script>

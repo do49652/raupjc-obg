@@ -40,34 +40,6 @@
     }
 }
 
-.collapse {
-    visibility: hidden;
-    max-height: auto;
-}
-
-    .collapse.in {
-        visibility: visible;
-        width: auto;
-        display: inline-block;
-        max-height: auto;
-    }
-
-.collapsing.width {
-    position: relative;
-    overflow: hidden;
-    -webkit-transition-property: height, visibility;
-    transition-property: height, visibility;
-    -webkit-transition-duration: 0.35s;
-    transition-duration: 0.35s;
-    -webkit-transition-timing-function: ease;
-    transition-timing-function: ease;
-    -webkit-transition-property: width, visibility;
-    transition-property: width, visibility;
-    width: 0;
-    height: inherit;
-    display: inline-block;
-}
-
 .editable-input input {
     resize: horizontal;
     min-width: 300px;

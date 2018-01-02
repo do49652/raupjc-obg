@@ -17,6 +17,11 @@ namespace raupjc_obg.Data
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
+            builder.Entity<ApplicationUser>().Property(u => u.InGameName);
+            builder.Entity<ApplicationUser>().Property(u => u.Admin);
+            builder.Entity<ApplicationUser>().Property(u => u.GamesPlayed);
+            builder.Entity<ApplicationUser>().Property(u => u.GamesWon);
+            builder.Entity<ApplicationUser>().HasMany(u => u.FavoriteGames);
         }
     }
 }

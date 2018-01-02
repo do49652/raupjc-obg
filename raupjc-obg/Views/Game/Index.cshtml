@@ -33,7 +33,7 @@
         </div>
         <br>
 
-        @if (Model.GameName == null || Model.Username == null || Model.Password == null)
+        @if (Model.GameName.Equals("") || Model.Username.Equals("") || Model.Password.Equals(""))
         {
             @await Html.PartialAsync("_JoinGame", Model)
         }

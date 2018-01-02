@@ -11,16 +11,21 @@ using raupjc_obg.Services;
 using raupjc_obg.Data;
 using raupjc_obg.Models.GameContentModels;
 using System.Data.Entity;
+using Microsoft.AspNetCore.Identity;
+using raupjc_obg.Models;
+using System.Threading.Tasks;
+using raupjc_obg.Models.OtherModels;
 
 namespace raupjc_obg.Controllers
 {
     public class GameController : Controller
     {
-
+        private UserManager<ApplicationUser> _userManager;
         private IServer _server;
 
-        public GameController(IServer server)
+        public GameController(UserManager<ApplicationUser> userManager, IServer server)
         {
+            _userManager = userManager;
             _server = server;
 
             server.StartServer("ws://192.168.1.5:8181", () => { },
@@ -77,7 +82,8 @@ namespace raupjc_obg.Controllers
                                  Players = new Dictionary<string, Player>(),
                                  GameStarted = false,
                                  Turn = 0,
-                                 Log = new List<string>()
+                                 Log = new List<string>(),
+                                 FinishingSpace = 150
                              };
                          }
                          else if (games.ContainsKey(gamename) && !games[gamename].Password.Equals(password))
@@ -226,6 +232,16 @@ namespace raupjc_obg.Controllers
                          goto case "sendReady";
 
                      case "sendReady":
+                         game.Players.Values.ToList().ForEach(p =>
+                         {
+                             if (p.Space >= game.FinishingSpace)
+                             {
+                                 game.Log.Add("[" + DateTime.Now + "] Game finished!");
+                                 game.Log.Add("[" + DateTime.Now + "] " + p.Username + " won!");
+                                 game.ChangeScene("end");
+                             }
+                         });
+
                          sockets.Keys.Where(s => sockets[s]["gamename"].Equals(sockets[socket]["gamename"])).ToList()
                              .ForEach(s => s.Send("ready"));
                          break;
@@ -233,25 +249,90 @@ namespace raupjc_obg.Controllers
              });
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(new JoinGameViewModel());
-        }
-
-        [HttpPost]
-        public IActionResult Index(JoinGameViewModel vm)
-        {
-            List<string> games = null;
-            using (var db = new GameDbContext(((Server)_server).ConnectionString))
-            {
-                games = db.Games.Select(g => g.Name).ToList();
-            }
-
-            while (games == null) ;
-
-            vm.gameNames = games;
+            var vm = new JoinGameViewModel();
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            if (currentUser != null && currentUser.InGameName != null && !currentUser.InGameName.Contains("@") && !currentUser.InGameName.Equals(""))
+                vm.Username = currentUser.InGameName;
 
             return View(vm);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(JoinGameViewModel vm)
+        {
+            List<Review> reviews = null;
+            List<GameModel> games = null;
+            using (var db = new GameDbContext(((Server)_server).ConnectionString))
+            {
+                games = db.Games.Where(g => !g.Private).ToList();
+                reviews = db.Reviews.Include(r => r.Game).Where(r => !r.Game.Private).ToList();
+            }
+            while (reviews == null || games == null) ;
+
+            var revGames = reviews.Select(r => r.Game.Name).Distinct().ToList();
+            var gamGames = games.Select(g => g.Name).Distinct().ToList();
+
+            if (revGames.Count != gamGames.Count)
+            {
+                var diff = gamGames.Except(revGames).ToList();
+                if (diff.Count > 0)
+                {
+                    foreach (var gn in diff)
+                    {
+                        reviews.Add(new Review
+                        {
+                            Game = new GameModel
+                            {
+                                Name = gn,
+                                Description = games.First(g => g.Name.Equals(gn)).Description
+                            },
+                            Comment = null
+                        });
+                    }
+                }
+            }
+
+            vm.reviews = reviews;
+
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            currentUser.InGameName = vm.Username;
+            await _userManager.UpdateAsync(currentUser);
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Rate(RateGameViewModel vm)
+        {
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            if (currentUser == null)
+                return RedirectToAction("Home");
+            using (var db = new GameDbContext(((Server)_server).ConnectionString))
+            {
+                var review = db.Reviews.FirstOrDefault(r => r.UserId.ToString().Equals(currentUser.Id));
+                if (review == null)
+                {
+                    review = new Review
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = Guid.Parse(currentUser.Id),
+                        Game = db.Games.First(g => g.Name.Equals(vm.GameName)),
+                        Rating = 0,
+                        Comment = ""
+                    };
+                    db.Reviews.Add(review);
+                }
+
+                review.Rating = vm.Rating;
+                review.Comment = vm.Comment;
+
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
     }
 }
