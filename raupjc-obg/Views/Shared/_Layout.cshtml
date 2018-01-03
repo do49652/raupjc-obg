@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="~/css/game.css" />
     <script src="~/lib/ladda-bootstrap/spin.min.js"></script>
     <script src="~/lib/ladda-bootstrap/ladda.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.js"></script>
     <link rel="stylesheet" href="~/lib/ladda-bootstrap/ladda-themeless.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
 
@@ -44,7 +45,7 @@
             <div class="col-md-1">
                 <ul class="nav nav-pills nav-stacked">
                     <li id="homePill" ><a asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li id="contentPill"><a asp-controller="Content" asp-action="Index">Content creator</a></li>
+                    <li id="contentPill"><a asp-controller="ContentCreator" asp-action="Index">Content creator</a></li>
                     <li id="gamePill" class="hidden"><a asp-controller="Game" asp-action="Index">Play game</a></li>
                 </ul>
             </div>

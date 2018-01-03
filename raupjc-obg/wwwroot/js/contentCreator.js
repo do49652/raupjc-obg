@@ -89,6 +89,7 @@
 		};
 
 		$('[id^="event-random-"]').each(function () {
+			console.log(2);
 			if (!$(this).is(':checked'))
 				return;
 			if (obj.MiniEvents != "")
@@ -103,7 +104,7 @@
 				obj.SetEvents += "\n";
 			obj.SetEvents += parseInt(this.value) + ":" + this.id.substring(10);
 		});
-
+		
 		$.ajax({
 			type: "POST",
 			url: "../SaveGameRandomSetEvents",
@@ -140,7 +141,7 @@
 			dataType: "json",
 			success: function (res) {
 				if (res)
-					window.location = "../../Content";
+					window.location = "../../ContentCreator";
 				l.stop();
 			}
 		});

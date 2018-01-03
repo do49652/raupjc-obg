@@ -10,15 +10,19 @@
     <input type="hidden" id="id" value="@Model.Id" />
     <input type="hidden" id="name" value="@Model.Name" />
 
-    <div class="col-md-5">
+    <div class="col-md-6">
         <br />
         <div class="row">
             <div class="col-md-8">
                 @if (Model.Private)
-                {
+                    {
                     <div class="input-group">
-                        <button id="publish-game" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Publish</span></button>
+                        <button id = "publish-game" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Publish</span></button>
                     </div>
+                    <div class="input-group">
+                        <button id="remove-game" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Remove</span></button>
+                    </div>
+                    <br />
                 }
                 <div class="input-group">
                     <span class="input-group-addon">Starting money: </span>
@@ -53,15 +57,15 @@
                                     <td>
                                         @if (Model.MiniEvents.Split('\n').ToList().Contains(e.Name))
                                         {
-                                            <input id="@(" event-random-" + e.Name)" type="checkbox" checked="checked">
+                                            <input id="@("event-random-" + e.Name)" type="checkbox" checked="checked">
                                         }
                                         else
                                         {
-                                            <input id="@(" event-random-" + e.Name)" type="checkbox">
+                                            <input id="@("event-random-" + e.Name)" type="checkbox">
                                         }
                                     </td>
                                     <td>
-                                        <input id="@(" event-set-" + e.Name)" class="form-control" type="number" value="@{
+                                        <input id="@("event-set-" + e.Name)" class="form-control" type="number" value="@{
                                                                                                            foreach (var m in Model.SetEvents.Split('\n'))
                                                                                                            {
                                                                                                                if (m.Split(':').Length == 2 && m.Split(':')[1].Equals(e.Name))
@@ -85,6 +89,7 @@
                 }
             </div>
         </div>
+        <hr />
     </div>
 
     <div class="col-md-2">
@@ -102,26 +107,28 @@
         {
             <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#new-event">New Event</button>
             <div id="new-event" class="collapse">
-                <form asp-action="Event" method="post">
+                <form asp-action="Event" method="post" data-toggle="validator">
                     <input type="hidden" name="GameName" value="@Model.Name" />
 
                     <div class="form-group">
                         <label>Name:</label>
-                        <input class="form-control" type="text" name="Name" />
+                        <input class="form-control" autocomplete="off" maxlength="42" pattern="[a-zA-Z0-9 ]*" data-error="Only alphanumeric characters allowed." type="text" name="Name" required />
+                        <div class="help-block with-errors"></div>
                     </div>
 
                     <div class="form-group">
                         <label>Description:</label>
-                        <input class="form-control" type="text" name="Description" />
+                        <input class="form-control" autocomplete="off" maxlength="42" pattern="[a-zA-Z0-9 \.-_]*" data-error="Only alphanumeric characters allowed." type="text" name="Description" required />
+                        <div class="help-block with-errors"></div>
                     </div>
 
-                    <div align="right">
+                    <div class="form-group" align="right">
                         <button class="btn btn-primary" type="submit">Create</button>
                     </div>
                 </form>
             </div>
         }
-
+        <hr />
     </div>
 
     <div class="col-md-2">
@@ -139,32 +146,33 @@
         {
             <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#new-item">New Item</button>
             <div id="new-item" class="collapse">
-                <form asp-action="Item" method="post">
+                <form asp-action="Item" method="post" data-toggle="validator">
                     <input type="hidden" name="GameName" value="@Model.Name" />
 
                     <div class="form-group">
                         <label>Name:</label>
-                        <input class="form-control" type="text" name="Name" />
+                        <input class="form-control" autocomplete="off" maxlength="42" pattern="[a-zA-Z0-9 ]*" data-error="Only alphanumeric characters allowed." type="text" name="Name" required />
+                        <div class="help-block with-errors"></div>
                     </div>
 
                     <div class="form-group">
                         <label>Description:</label>
-                        <input class="form-control" type="text" name="Description" />
+                        <input class="form-control" autocomplete="off" maxlength="42" pattern="[a-zA-Z0-9 \.-_]*" data-error="Only alphanumeric characters allowed." type="text" name="Description" required />
+                        <div class="help-block with-errors"></div>
                     </div>
 
-                    <div align="right">
+                    <div class="form-group" align="right">
                         <button class="btn btn-primary" type="submit">Create</button>
                     </div>
                 </form>
             </div>
         }
+        <hr />
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-2">
         @await Html.PartialAsync("_Dependencies", Model)
     </div>
-
-
 </div>
 
 @section Scripts{

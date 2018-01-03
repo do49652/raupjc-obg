@@ -29,13 +29,15 @@ namespace raupjc_obg.Controllers
             _itemRepository = itemRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(new GameViewModel());
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            var games = (await _gameRepository.GetAllByUser(Guid.Parse(currentUser.Id))).Select(g => g.CreateGameViewModel()).OrderBy(g => g.Name).ToList();
+            return View(games);
         }
-
+        
         [HttpPost]
-        public async Task<IActionResult> Index(GameViewModel gameVm)
+        public async Task<IActionResult> Game(GameViewModel gameVm)
         {
             var currentUser = await _userManager.GetUserAsync(HttpContext.User);
             gameVm.Id = Guid.NewGuid().ToString();
@@ -45,7 +47,7 @@ namespace raupjc_obg.Controllers
             gameVm.GameModels = await _gameRepository.GetAll();
 
             if (gameVm.GameModels.Select(g => g.Name).ToList().Contains(gameVm.Name))
-                return View(gameVm);
+                return RedirectToAction("Game", new { id = gameVm.Id });
 
             if (await _gameRepository.Add(new GameModel
             {
@@ -64,7 +66,7 @@ namespace raupjc_obg.Controllers
             }))
                 return RedirectToAction("Game", new { id = gameVm.Id });
 
-            return View(gameVm);
+            return RedirectToAction("Game", new { id = gameVm.Id });
         }
 
         public async Task<IActionResult> Game(string id)
@@ -93,7 +95,7 @@ namespace raupjc_obg.Controllers
 
             var game = await _gameRepository.GetGameByName(eventVm.GameName);
             if (game == null)
-                return RedirectToAction("Index", "Content");
+                return RedirectToAction("Index");
 
             eventVm.EventModels = await _eventRepository.GetAll();
 
@@ -107,7 +109,7 @@ namespace raupjc_obg.Controllers
                 Game = game,
                 Name = eventVm.Name,
                 Description = eventVm.Description,
-                Behaviour = "",
+                Behaviour = "@Begin\n@End",
                 Repeat = 0,
                 NextEvent = null,
                 HappensOnce = false,
@@ -148,7 +150,7 @@ namespace raupjc_obg.Controllers
 
             var game = await _gameRepository.GetGameByName(itemVm.GameName);
             if (game == null)
-                return RedirectToAction("Index", "Content");
+                return RedirectToAction("Index");
 
             itemVm.ItemModels = await _itemRepository.GetAll();
 
@@ -162,7 +164,7 @@ namespace raupjc_obg.Controllers
                 Game = game,
                 Name = itemVm.Name,
                 Description = itemVm.Description,
-                Behaviour = "",
+                Behaviour = "@Begin\n@End",
                 Category = ""
             }))
                 return RedirectToAction("Item", new { name = itemVm.Name });

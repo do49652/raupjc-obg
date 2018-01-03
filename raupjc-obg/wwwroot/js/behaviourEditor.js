@@ -125,6 +125,13 @@
 			var line = parseInt(bAction.parent().next().data("line"));
 			var text = bAction.find('span').html();
 
+			bAction.on("keydown", function (e) {
+				if (e.which == 32) {
+					bAction.find('span').find('input').val(bAction.find('span').find('input').val() + " ");
+					e.preventDefault();
+				}
+			});
+
 			bAction.find('span').editable({
 				type: 'text',
 				value: text,

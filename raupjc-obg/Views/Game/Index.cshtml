@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="~/css/game.css" />
     <script src="~/lib/ladda-bootstrap/spin.min.js"></script>
     <script src="~/lib/ladda-bootstrap/ladda.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.js"></script>
     <link rel="stylesheet" href="~/lib/ladda-bootstrap/ladda-themeless.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
 </head>
@@ -33,7 +34,7 @@
         </div>
         <br>
 
-        @if (Model.GameName.Equals("") || Model.Username.Equals("") || Model.Password.Equals(""))
+        @if (Model.Username == null || Model.GameName == null || Model.Password == null || Model.GameName.Equals("") || Model.Username.Equals("") || Model.Password.Equals(""))
         {
             @await Html.PartialAsync("_JoinGame", Model)
         }

@@ -23,6 +23,8 @@ namespace raupjc_obg.Services
             var sockets = new Dictionary<IWebSocketConnection, Dictionary<string, string>>();
             var games = new Dictionary<string, GameManager>();
             var server = new WebSocketServer(address);
+            server.ListenerSocket.NoDelay = true;
+            server.RestartAfterListenError = true;
             try
             {
                 server.Start(socket =>

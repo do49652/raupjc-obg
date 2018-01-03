@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Identity;
 using raupjc_obg.Models;
 using System.Threading.Tasks;
 using raupjc_obg.Models.OtherModels;
+using raupjc_obg.Extensions;
 
 namespace raupjc_obg.Controllers
 {
@@ -28,7 +29,7 @@ namespace raupjc_obg.Controllers
             _userManager = userManager;
             _server = server;
 
-            server.StartServer("ws://192.168.1.5:8181", () => { },
+            server.StartServer("ws://0.0.0.0:8181", () => { },
                 (sockets, games, socket) =>
             {
                 GameManager game = null;
@@ -262,12 +263,23 @@ namespace raupjc_obg.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(JoinGameViewModel vm)
         {
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+
+            if (vm.Username == null || vm.GameName == null || vm.Password == null || "".Equals(vm.Username) || "".Equals(vm.GameName) || "".Equals(vm.Password))
+                return View(vm);
+
             List<Review> reviews = null;
             List<GameModel> games = null;
             using (var db = new GameDbContext(((Server)_server).ConnectionString))
             {
                 games = db.Games.Where(g => !g.Private).ToList();
                 reviews = db.Reviews.Include(r => r.Game).Where(r => !r.Game.Private).ToList();
+
+                if (currentUser != null)
+                {
+                    games.AddRange(db.Games.Where(g => (g.Private && g.UserId.ToString().Equals(currentUser.Id))).ToList());
+                    reviews.AddRange(db.Reviews.Include(r => r.Game).Where(r => (r.Game.Private && r.Game.UserId.ToString().Equals(currentUser.Id))).ToList());
+                }
             }
             while (reviews == null || games == null) ;
 
@@ -294,9 +306,14 @@ namespace raupjc_obg.Controllers
                 }
             }
 
+            vm.Username = RegExHelperExtensions.ReplaceNotMatching(vm.Username, "[a-z0-9]*", "", RegexOptions.IgnoreCase);
+            vm.GameName = RegExHelperExtensions.ReplaceNotMatching(vm.GameName, "[a-z0-9]*", "", RegexOptions.IgnoreCase);
+            vm.Password = RegExHelperExtensions.ReplaceNotMatching(vm.Password, "[a-z0-9]*", "", RegexOptions.IgnoreCase);
             vm.reviews = reviews;
 
-            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            if (currentUser == null)
+                return View(vm);
+
             currentUser.InGameName = vm.Username;
             await _userManager.UpdateAsync(currentUser);
 
@@ -308,7 +325,7 @@ namespace raupjc_obg.Controllers
         {
             var currentUser = await _userManager.GetUserAsync(HttpContext.User);
             if (currentUser == null)
-                return RedirectToAction("Home");
+                return RedirectToAction("Index", "Home");
             using (var db = new GameDbContext(((Server)_server).ConnectionString))
             {
                 var review = db.Reviews.FirstOrDefault(r => r.UserId.ToString().Equals(currentUser.Id));

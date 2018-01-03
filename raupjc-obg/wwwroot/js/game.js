@@ -119,6 +119,7 @@ var start = function () {
 				var sentMessage = message.substring(sender.length + 6);
 
 				$('#chat').append('<span>[' + sender + '] ' + sentMessage + '</span><br>');
+				$('#chat').parent().scrollTop($('#chat').parent()[0].scrollHeight);
 			});
 		} else {
 			var game = JSON.parse(message);
@@ -134,6 +135,7 @@ var start = function () {
 					log += '<span data-toggle="tooltip" data-placement="left auto" data-container="body" title="' + game["Log"][i].split("]")
 					[0].substring(1) + '">' + game["Log"][i].replace(/\[([a-z0-9_ :-]*)\]/i, "") + "</span><br>";
 				$("#log").text("").append(log);
+				$('#log').parent().scrollTop($('#log').parent()[0].scrollHeight);
 				$('[data-toggle="tooltip"]').tooltip();
 
 				log = "";

@@ -11,7 +11,7 @@
     <input type="hidden" id="id" value="@Model.Id" />
     <input type="hidden" id="name" value="@Model.Name" />
 
-    <div class="col-md-5">
+    <div class="col-md-6">
         <h4>Behaviour</h4>
 
         <ul class="nav nav-pills">
@@ -24,12 +24,16 @@
             <textarea id="behaviour" class="form-control tab-pane fade" style="width: 100%; height:40vh;">@Model.Behaviour</textarea>
         </div>
 
-        <div align="right">
-            <button id="save-event-behaviour" class="btn btn-primary ladda-button" data-style="slide-left" disabled><span class="ladda-label">Save</span></button>
-        </div>
+        @if (Model.GameModels.First(g => g.Name.Equals(Model.GameName)).Private)
+        {
+            <div align="right">
+                <button id="save-event-behaviour" class="btn btn-primary ladda-button" data-style="slide-left" disabled><span class="ladda-label">Save</span></button>
+            </div>
+        }
+        <hr />
     </div>
 
-    <div class="col-md-3">
+    <div class="col-md-4">
         <h4>Shop</h4>
 
         <div class="table-responsive">
@@ -63,12 +67,16 @@
             </table>
         </div>
 
-        <div align="right">
-            <button id="save-event-items" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Save</span></button>
-        </div>
+        @if (Model.GameModels.First(g => g.Name.Equals(Model.GameName)).Private)
+        {
+            <div align="right">
+                <button id="save-event-items" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Save</span></button>
+            </div>
+        }
+        <hr />
     </div>
 
-    <div id="dependencies" class="col-md-offset-1 col-md-3">
+    <div id="dependencies" class="col-md-2">
         @{
             var game = new GameViewModel
             {
@@ -76,7 +84,7 @@
                 EventModels = Model.EventModels.OrderBy(e => e.Name).ToList(),
                 ItemModels = Model.ItemModels.OrderBy(i => i.Name).ToList()
             };
-            @await Html.PartialAsync("_Dependencies", game);
+            @await Html.PartialAsync("_Dependencies", game)
         }
     </div>
 </div>
