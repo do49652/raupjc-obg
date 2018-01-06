@@ -1,9 +1,9 @@
 ﻿var startGame = function (gametostart) {};
 
-var start = function () {
+var start = function (ip) {
 	var inc = document.getElementById("joined");
 	var wsImpl = window.WebSocket || window.MozWebSocket;
-	window.ws = new wsImpl("ws://192.168.1.5:8181");
+	window.ws = new wsImpl("ws://" + ip + ":8181");
 
 	var admin = false;
 	var username = document.getElementById("username").innerHTML;
@@ -74,8 +74,7 @@ var start = function () {
 				});
 
 				if (msg.startsWith("@Choice")) {
-					$("#itemModal .modal-body").load("/html/choice.html",
-						() => {
+					$("#itemModal .modal-body").text("").append('<p id="message"></p><button class="btn btn-info" id="proceed1">Choice1</button><button class="btn btn-info" id="proceed2">Choice2</button><button class="btn btn-info" id="proceed3">Choice3</button><button class="btn btn-info" id="proceed4">Choice4</button><button class="btn btn-info" id="proceed5">Choice5</button><button class="btn btn-info" id="proceed6">Choice6</button><button class="btn btn-info" id="proceed7">Choice7</button><button class="btn btn-info" id="proceed8">Choice8</button>').promise().done().then(function () {
 						var title = msg.split("\n")[0].split("->")[1].trim();
 						var choices = [];
 
@@ -288,4 +287,16 @@ var start = function () {
 		inc.innerHTML = "connection closed";
 	};
 };
-window.onload = start;
+
+var beforeStart = function () {
+	$(function () {
+		var name;
+		do {
+			name = prompt("Please enter your name");
+		} while (name.length < 4);
+		start(name);
+	});
+}
+
+//93.136.59.99
+window.onload = beforeStart;

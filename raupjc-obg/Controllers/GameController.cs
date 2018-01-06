@@ -29,7 +29,7 @@ namespace raupjc_obg.Controllers
             _userManager = userManager;
             _server = server;
 
-            server.StartServer("ws://0.0.0.0:8181", () => { },
+            server.StartServer("ws://[::]:8181", () => { },
                 (sockets, games, socket) =>
             {
                 GameManager game = null;

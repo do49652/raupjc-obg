@@ -15,7 +15,8 @@ namespace raupjc_obg
         {
             return WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseKestrel(options => { options.Listen(IPAddress.Parse("192.168.1.5"), 5000); })
+                .UseKestrel()
+                .UseUrls("http://*:5000")
                 .Build();
         }
     }
