@@ -238,5 +238,13 @@ namespace raupjc_obg.Controllers
         }
 
 
+        [HttpPost]
+        public async Task<bool> RemoveGame(GameViewModel gameVm)
+        {
+            var game = await _gameRepository.GetGameById(Guid.Parse(gameVm.Id)) ?? await _gameRepository.GetGameByName(gameVm.Name);
+            return await _gameRepository.Remove(game);
+        }
+
+
     }
 }

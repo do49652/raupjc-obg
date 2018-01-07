@@ -19,5 +19,6 @@ namespace raupjc_obg.Repositories
         Task<GameModel> GetGameByName(string name);
 
         Task<bool> Add(GameModel game);
+        Task<bool> Remove(GameModel game);
     }
 }

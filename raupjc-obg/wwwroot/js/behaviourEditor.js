@@ -93,6 +93,9 @@
 				case "OnEvent":
 					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@OnEvent -> Event";
 					break;
+				case "HasItem":
+					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@HasItem -> Item";
+					break;
 				case "NoEvent":
 					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@NoEvent -> Section";
 					break;
@@ -127,8 +130,11 @@
 
 			bAction.on("keydown", function (e) {
 				if (e.which == 32) {
-					bAction.find('span').find('input').val(bAction.find('span').find('input').val() + " ");
+					var input = bAction.find('span').find('input');
 					e.preventDefault();
+					var cursorI = getCursorPosition(input);
+					input.val(input.val().substring(0, cursorI) + " " + input.val().substring(cursorI));
+					input.setCursorPosition(cursorI + 1);
 				}
 			});
 
@@ -136,9 +142,11 @@
 				type: 'text',
 				value: text,
 				success: function (response, newValue) {
-					newValue = newValue.replace(/[;@]*/g, "");
+					newValue = newValue.replace(/[>;@]*/g, "");
 					if (!textEditor[line].startsWith("@Monologue -> "))
 						newValue = newValue.replace(/:*/g, "");
+					newValue = newValue.replace("https//", "https://");
+					textEditor[line] = textEditor[line].replace("https//", "https://");
 
 					if (newValue == "")
 						newValue = "Empty";
@@ -170,7 +178,7 @@
 
 		if (previousActions.length == 0)
 			actionButtons += (window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1) == "Item" ? '<button class="btn btn-default newAction">OnEvent</button><button class="btn btn-default newAction">NoEvent</button>' : '')
-			 + '<button class="btn btn-default newAction">Section</button><button class="btn btn-default newAction">XX%</button><button class="btn btn-default newAction">Choice</button><button class="btn btn-default newAction">Shop</button>';
+			 + '<button class="btn btn-default newAction">HasItem</button><button class="btn btn-default newAction">Section</button><button class="btn btn-default newAction">XX%</button><button class="btn btn-default newAction">Choice</button><button class="btn btn-default newAction">Shop</button>';
 
 		if (previousActions[0] == "")
 			actionButtons += '<button class="btn btn-default newAction">New choice</button>';
@@ -195,7 +203,7 @@
 	function createButton(action) {
 		if (action.startsWith("@Buy") || action.startsWith("@Remove") || action.startsWith("@Give"))
 			return '<button class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span style="color: magenta;">' + action.split(" -> ")[1] + '</span></button>';
-		else if (action.startsWith("@OnEvent"))
+		else if (action.startsWith("@OnEvent") || action.startsWith("@HasItem"))
 			return '<button class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span style="color: red;">' + action.split(" -> ")[1] + '</span></button>';
 		else if (action.startsWith("@NoEvent") || action.startsWith("@Goto"))
 			return '<button class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span style="color: blue;">' + action.split(" -> ")[1] + '</span></button>';
@@ -226,3 +234,34 @@ $(document).ready(function () {
 	$.fn.editable.defaults.mode = 'inline';
 	updateBehaviourEditor();
 });
+
+function getCursorPosition(jqueryItem) {
+	var input = jqueryItem.get(0);
+	if (!input)
+		return;
+	if ('selectionStart' in input) {
+		return input.selectionStart;
+	} else if (document.selection) {
+		input.focus();
+		var sel = document.selection.createRange();
+		var selLen = document.selection.createRange().text.length;
+		sel.moveStart('character', -input.value.length);
+		$("#sel").html(sel);
+		$("#selLen").html(selLen);
+		return sel.text.length - selLen;
+	}
+}
+$.fn.setCursorPosition = function (pos) {
+	this.each(function (index, elem) {
+		if (elem.setSelectionRange) {
+			elem.setSelectionRange(pos, pos);
+		} else if (elem.createTextRange) {
+			var range = elem.createTextRange();
+			range.collapse(true);
+			range.moveEnd('character', pos);
+			range.moveStart('character', pos);
+			range.select();
+		}
+	});
+	return this;
+};

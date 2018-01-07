@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using raupjc_obg.Game.Components;
+using System.Diagnostics;
 
 namespace raupjc_obg.Game
 {
@@ -153,21 +154,13 @@ namespace raupjc_obg.Game
                 var possibleActions = new List<string>();
                 while (behaviour[i].Split(';')[0].Contains("%"))
                 {
-                    possibleActions.Add(behaviour[i]);
+                    for (var j = 0; j < int.Parse(behaviour[i].Split('%')[0].Substring(1)); j++)
+                        possibleActions.Add(behaviour[i]);
                     i++;
                 }
 
-                possibleActions.Sort();
-                action = possibleActions.Last();
-
-                var rnd = _random.Next(0, 101);
-                possibleActions.ForEach(pa =>
-                {
-                    if (int.Parse(pa.Split(';')[0].Substring(1, 2)) < rnd)
-                        action = pa;
-                });
-
-                action = action.Substring(5).Trim();
+                var rnd = _random.Next(0, possibleActions.Count);
+                action = possibleActions[rnd].Substring(5).Trim();
             }
 
             // If action is not given and is not decided by random chance, just execute current action on behaviour list
@@ -210,6 +203,11 @@ namespace raupjc_obg.Game
                     if (player.CurrentEvent != null && Players.Keys.ToList().IndexOf(player.Username) == WhosTurn() &&
                         Scene.Equals("event") &&
                         player.CurrentEvent.Name.Equals(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()))
+                        continue;
+                    else
+                        break;
+                if (a.StartsWith("@HasItem")) // Execute if player has specific item
+                    if (player.Items.FirstOrDefault(item => item.Name.Equals(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim())) != null)
                         continue;
                     else
                         break;

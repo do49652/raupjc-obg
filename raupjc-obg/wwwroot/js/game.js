@@ -1,9 +1,10 @@
 ﻿var startGame = function (gametostart) {};
 
-var start = function (ip) {
+var start = function () {
 	var inc = document.getElementById("joined");
 	var wsImpl = window.WebSocket || window.MozWebSocket;
-	window.ws = new wsImpl("ws://" + ip + ":8181");
+	window.ws = new wsImpl("ws://onlineboardgames.hopto.org:8181");
+	//window.ws = new wsImpl("ws://192.168.1.6:8181");
 
 	var admin = false;
 	var username = document.getElementById("username").innerHTML;
@@ -64,10 +65,16 @@ var start = function (ip) {
 			ws.send("ready");
 		} else if (message.startsWith("item:")) {
 			$(function () {
-				var msg = message.split(":")[2].trim();
-
+				var msg = message.substring(2 + message.split(":")[1].length + message.split(":")[0].length);
 				$("#itemModal .modal-title").text(message.split(":")[1]);
-				$("#itemModal .modal-body").text("").append(message.split(":")[2] + "<br>");
+
+				if (msg.indexOf("IMG(") != -1) {
+					var str = '<img class="img-rounded " src="' + msg.substring(msg.indexOf("IMG(") + 4, msg.indexOf(") ")) + '" ><br>';
+					str += msg.replace(msg.substring(msg.indexOf("IMG("), msg.indexOf(") ") + 1), "");
+					$("#itemModal .modal-body").text("").append(str + "<br>");
+				} else
+					$("#itemModal .modal-body").text("").append(msg + "<br>");
+
 				$("#itemModal .modal-body").append('<button class="btn btn-warning" id="item_">Continue</button>');
 				$("#itemModal .modal-body #item_").off("click").click(function () {
 					ws.send("item:" + message.split(":")[1]);
@@ -86,7 +93,12 @@ var start = function (ip) {
 							});
 						}
 
-						$("#itemModal .modal-body #message").text("").append(title);
+						if (title.indexOf("IMG(") != -1) {
+							var str = '<img class="img-rounded " height="400" src="' + title.substring(title.indexOf("IMG(") + 4, title.indexOf(") ")) + '" ><br><br>';
+							str += title.replace(title.substring(title.indexOf("IMG("), title.indexOf(") ") + 1), "");
+							$("#itemModal .modal-body #message").text("").append(str + "<br>");
+						} else
+							$("#itemModal .modal-body #message").text("").append(title + "<br>");
 
 						for (let i = 1; i <= 8; i++) {
 							$("#itemModal .modal-body #proceed" + i).addClass("hidden");
@@ -110,7 +122,6 @@ var start = function (ip) {
 					$("#itemModal .modal-body").text("");
 					$("#itemModal").modal("hide");
 				}
-
 			});
 		} else if (message.startsWith("chat:")) {
 			$(function () {
@@ -131,8 +142,7 @@ var start = function (ip) {
 
 				var log = "";
 				for (let i = 0; i < game["Log"].length; i++)
-					log += '<span data-toggle="tooltip" data-placement="left auto" data-container="body" title="' + game["Log"][i].split("]")
-					[0].substring(1) + '">' + game["Log"][i].replace(/\[([a-z0-9_ :-]*)\]/i, "") + "</span><br>";
+					log += '<span data-toggle="tooltip" data-placement="left auto" data-container="body" title="' + game["Log"][i].split("]")[0].substring(1) + '">' + game["Log"][i].replace(/\[([a-z0-9_ /\\:-]*)\]/i, "") + "</span><br>";
 				$("#log").text("").append(log);
 				$('#log').parent().scrollTop($('#log').parent()[0].scrollHeight);
 				$('[data-toggle="tooltip"]').tooltip();
@@ -156,7 +166,7 @@ var start = function (ip) {
 				else if (game["Scene"] == "event")
 					$("#game").text("").append('<p id="message"></p><button class="btn btn-warning" id="proceed">Continue</button>');
 				else if (game["Scene"] == "roll")
-					$("#game").text("").append('<button class="btn btn-primary" id="rollDice">Roll</button>');
+					$("#game").text("").append('<img class="img-rounded " height="400" src="https://i.imgur.com/F3LImXW.png"><br><br><button class="btn btn-primary" id="rollDice">Roll</button>');
 				else if (game["Scene"] == "rolled")
 					$("#game").text("").append('<p id="message"></p><button class="btn btn-primary" id="proceed">Move</button>');
 				else if (game["Scene"] == "shop")
@@ -190,7 +200,12 @@ var start = function (ip) {
 						});
 					}
 
-					$("#message").text("").append(title);
+					if (title.indexOf("IMG(") != -1) {
+						var str = '<img class="img-rounded " height="400" src="' + title.substring(title.indexOf("IMG(") + 4, title.indexOf(") ")) + '" ><br><br>';
+						str += title.replace(title.substring(title.indexOf("IMG("), title.indexOf(") ") + 1), "");
+						$("#message").text("").append(str + "<br>");
+					} else
+						$("#message").text("").append(title + "<br>");
 
 					for (let i = 1; i <= 8; i++) {
 						$("#proceed" + i).addClass("hidden");
@@ -257,9 +272,15 @@ var start = function (ip) {
 				} else {
 					if (game["Scene"] == "rolled")
 						$("#message").text("You rolled " + game["LastRoll"] + ".");
-					else if (game["Scene"] == "event")
-						$("#message").text("").append(game["Message"]);
+					else if (game["Scene"] == "event") {
+						if (game["Message"].indexOf("IMG(") != -1) {
+							var str = '<img class="img-rounded " height="400" src="' + game["Message"].substring(game["Message"].indexOf("IMG(") + 4, game["Message"].indexOf(") ")) + '" ><br><br>';
+							str += game["Message"].replace(game["Message"].substring(game["Message"].indexOf("IMG("), game["Message"].indexOf(") ") + 1), "");
+							$("#message").text("").append(str);
+						} else
+							$("#message").text("").append(game["Message"]);
 
+					}
 					if (playingUsername == username) {
 						$("#proceed").off("click").click(function () {
 							ws.send("move");
@@ -274,6 +295,8 @@ var start = function (ip) {
 						ws.send("item:" + game["Players"][username]["Items"][i]["Name"]);
 					});
 				}
+			}).promise().done().then(function () {
+				//$('#game').find('button').first().focus();
 			});
 		}
 	};
@@ -288,15 +311,4 @@ var start = function (ip) {
 	};
 };
 
-var beforeStart = function () {
-	$(function () {
-		var name;
-		do {
-			name = prompt("Please enter your name");
-		} while (name.length < 4);
-		start(name);
-	});
-}
-
-//93.136.59.99
-window.onload = beforeStart;
+window.onload = start;

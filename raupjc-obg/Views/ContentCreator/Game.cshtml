@@ -15,12 +15,10 @@
         <div class="row">
             <div class="col-md-8">
                 @if (Model.Private)
-                    {
+                {
                     <div class="input-group">
-                        <button id = "publish-game" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Publish</span></button>
-                    </div>
-                    <div class="input-group">
-                        <button id="remove-game" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Remove</span></button>
+                        <button id="publish-game" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Publish</span></button>
+                        <button id="remove-game" class="btn btn-danger ladda-button" data-style="slide-left"><span class="ladda-label">Remove</span></button>
                     </div>
                     <br />
                 }

@@ -157,5 +157,18 @@ namespace raupjc_obg.Repositories
             await _dbContext.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> Remove(GameModel game)
+        {
+            var oGame = await _dbContext.Games.FirstOrDefaultAsync(g => g.Id.Equals(game.Id)) ??
+                        await _dbContext.Games.FirstOrDefaultAsync(g => g.Name.Equals(game.Name));
+
+            if (oGame == null)
+                return false;
+
+            _dbContext.Games.Remove(oGame);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
     }
 }

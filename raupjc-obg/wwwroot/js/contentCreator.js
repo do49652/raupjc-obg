@@ -146,4 +146,27 @@
 			}
 		});
 	});
+	
+	$("#remove-game").off("click").click(function () {
+		var l = Ladda.create(this);
+		var obj = {
+			Id: $("#id").val(),
+			Name: $("#name").val()
+		};
+
+		$.ajax({
+			type: "POST",
+			url: "../RemoveGame",
+			beforeSend: function () {
+				l.start();
+			},
+			data: obj,
+			dataType: "json",
+			success: function (res) {
+				if (res)
+					window.location = "../../ContentCreator";
+				l.stop();
+			}
+		});
+	});
 });
