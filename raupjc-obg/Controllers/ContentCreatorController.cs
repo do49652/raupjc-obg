@@ -35,7 +35,7 @@ namespace raupjc_obg.Controllers
             var games = (await _gameRepository.GetAllByUser(Guid.Parse(currentUser.Id))).Select(g => g.CreateGameViewModel()).OrderBy(g => g.Name).ToList();
             return View(games);
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> Game(GameViewModel gameVm)
         {
@@ -243,6 +243,23 @@ namespace raupjc_obg.Controllers
         {
             var game = await _gameRepository.GetGameById(Guid.Parse(gameVm.Id)) ?? await _gameRepository.GetGameByName(gameVm.Name);
             return await _gameRepository.Remove(game);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        public String GetGames()
+        {
+            List<GameModel> games = null;
+            var t = _gameRepository.GetAllPublicGames();
+            while (!t.IsCompleted) ;
+            games = t.Result;
+
+            String str = "";
+            games.ForEach(g =>
+            {
+                str += g.Name + ":";
+            });
+            return str;
         }
 
 

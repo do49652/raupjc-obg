@@ -149,9 +149,9 @@ var start = function () {
 
 				log = "";
 				for (let i = 0; i < Object.keys(game["Players"]).length; i++)
-					log += Object.keys(game["Players"])[i] + ": " + game["Players"][Object.keys(game["Players"])[i]]["Space"] + "\n";
+					log += Object.keys(game["Players"])[i] + ": " + game["Players"][Object.keys(game["Players"])[i]]["Space"] + "<br>";
 
-				$("#players").text(log);
+				$("#players").text("").append(log);
 
 				log = "<p>Money: " + game["Players"][username]["Money"] + "</p>";
 				for (let i = 0; i < game["Players"][username]["Items"].length; i++)

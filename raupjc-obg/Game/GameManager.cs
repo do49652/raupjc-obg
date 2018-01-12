@@ -211,8 +211,7 @@ namespace raupjc_obg.Game
                         continue;
                     else
                         break;
-                if (a.StartsWith("@NoEvent")
-                ) // Same as @Goto, used for item behaviour. Used for easier understanding of the behaviour
+                if (a.StartsWith("@NoEvent")) // Same as @Goto, used for item behaviour. Used for easier understanding of the behaviour
                 {
                     var func = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim();
                     for (var j = 0; j < behaviour.Count; j++)
@@ -224,8 +223,7 @@ namespace raupjc_obg.Game
                         break;
                     }
                 }
-                else if (a.StartsWith("@Move")
-                ) // Action should contain number of spaces. Move() method handles actual moving.
+                else if (a.StartsWith("@Move")) // Action should contain number of spaces. Move() method handles actual moving.
                 {
                     Move(t, int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()));
                 }
@@ -269,8 +267,7 @@ namespace raupjc_obg.Game
                         break;
                     }
                 }
-                else if (a.StartsWith("@Choice")
-                ) // Give player a choice and respect it by following that line of behaviour
+                else if (a.StartsWith("@Choice")) // Give player a choice and respect it by following that line of behaviour
                 {
                     if (hb is Event)
                         ChangeScene("choice");
