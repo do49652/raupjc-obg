@@ -3,8 +3,7 @@
 var start = function () {
 	var inc = document.getElementById("joined");
 	var wsImpl = window.WebSocket || window.MozWebSocket;
-	window.ws = new wsImpl("ws://onlineboardgames.hopto.org:8181");
-	//window.ws = new wsImpl("ws://192.168.1.6:8181");
+	window.ws = new wsImpl("ws://192.168.1.5:8181");
 
 	var admin = false;
 	var username = document.getElementById("username").innerHTML;

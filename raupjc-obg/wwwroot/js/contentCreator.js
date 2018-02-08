@@ -89,7 +89,6 @@
 		};
 
 		$('[id^="event-random-"]').each(function () {
-			console.log(2);
 			if (!$(this).is(':checked'))
 				return;
 			if (obj.MiniEvents != "")

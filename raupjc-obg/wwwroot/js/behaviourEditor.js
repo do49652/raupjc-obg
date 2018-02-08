@@ -41,10 +41,13 @@
 				actionButtons.toggleClass('in');
 				actionButtons.css('width', 'auto');
 
-				if (actionButtons.hasClass('in'))
+				if (actionButtons.hasClass('in')) {
 					actionButtons.find('*').removeClass('hidden');
-				else
+					actionButtons.css('padding', '10px');
+				} else {
 					actionButtons.find('*').addClass('hidden');
+					actionButtons.css('padding', '0');
+				}
 			});
 		});
 	}).then(function () {
@@ -57,63 +60,66 @@
 				var line = parseInt(actionButton.parent().data("line"));
 
 				switch (actionText) {
-				case "Next row":
-					textEditor[line] += "\n";
-					break;
-				case "Move":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Move -> 0";
-					break;
-				case "Log":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Log -> Some log.";
-					break;
-				case "Log+":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Log+ -> User prints some log.";
-					break;
-				case "Goto":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Goto -> Section";
-					break;
-				case "Monologue":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Monologue -> Text to display.";
-					break;
-				case "Give":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Give -> Item";
-					break;
-				case "Remove":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Remove -> Item";
-					break;
-				case "Money":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Money -> +0";
-					break;
-				case "Section":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Section";
-					break;
-				case "Shop":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Shop";
-					break;
-				case "OnEvent":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@OnEvent -> Event";
-					break;
-				case "HasItem":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@HasItem -> Item";
-					break;
-				case "NoEvent":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@NoEvent -> Section";
-					break;
-				case "XX%":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@50%";
-					break;
-				case "Choice":
-					textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Choice -> Chose something.";
-					break;
-				case "New choice":
-					if (textEditor[line].startsWith("@C8"))
+					case "Next row":
+						textEditor[line] += "\n";
 						break;
-					if (textEditor[line].startsWith("@Choice")) {
-						textEditor[line] += "\n@C1 -> Choice";
+					case "Move":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Move -> 0";
 						break;
-					}
-					textEditor[line] += "\n@C" + (parseInt(textEditor[line].substring(2).split(" -> ")[0]) + 1) + " -> Chose something.";
-					break;
+					case "Log":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Log -> Some log.";
+						break;
+					case "Log+":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Log+ -> Player says...";
+						break;
+					case "Goto":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Goto -> Section";
+						break;
+					case "Monologue":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Monologue -> Text.";
+						break;
+					case "GiveItem":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@GiveItem -> Item";
+						break;
+					case "RemoveItem":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@RemoveItem -> Item";
+						break;
+					case "Money":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Money -> +0";
+						break;
+					case "Section":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Section";
+						break;
+					case "Shop":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Shop";
+						break;
+					case "OnEvent":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@OnEvent -> Event";
+						break;
+					case "HasItem":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@HasItem -> Item";
+						break;
+					case "NoEvent":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@NoEvent -> Section";
+						break;
+					case "XX%":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@50%";
+						break;
+					case "Choice":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@Choice -> Choose something.";
+						break;
+					case "ChoosePlayer":
+						textEditor[line] += (textEditor[line] == "" ? "" : "; ") + "@ChoosePlayer -> 150";
+						break;
+					case "New choice":
+						if (textEditor[line].startsWith("@C8"))
+							break;
+						if (textEditor[line].startsWith("@Choice")) {
+							textEditor[line] += "\n@C1 -> Choice";
+							break;
+						}
+						textEditor[line] += "\n@C" + (parseInt(textEditor[line].substring(2).split(" -> ")[0]) + 1) + " -> Choose something.";
+						break;
 				}
 
 				updateTextEditor(textEditor);
@@ -166,25 +172,31 @@
 
 	function newAction(previousActions, line) {
 		if (previousActions == null)
-			return '<div data-line="' + line + '" class="btn-group collapse width" style="width:0px;"></div>';
+			return '<div data-line="' + line + '" class="btn-group collapse width row col-xs-offset-1 well" style="width:0px; padding:0; margin:0;"></div>';
 
 		var actionButtons = '';
 
 		if (previousActions.length > 0 && previousActions[0].startsWith("Choice: "))
-			return '<button class="btn btn-default newAction">New choice</button><br>';
+			return '<button class="btn btn-default newAction">New choice</button>';
+
+		if (previousActions.length == 1 && previousActions[0].startsWith("ChoosePlayer: "))
+			return '<button class="btn btn-default newAction">Move</button><button class="btn btn-default newAction">GiveItem</button><button class="btn btn-default newAction">RemoveItem</button><button class="btn btn-default newAction">Money</button>';
+
+		if (previousActions.length > 1 && previousActions[0].startsWith("ChoosePlayer: "))
+			return '<button class="btn btn-default newAction">Next row</button>';
 
 		if (previousActions.length == 1 && ((previousActions[0].indexOf("%") == -1 && previousActions[0].indexOf(":") == -1) || previousActions[previousActions.length - 1].startsWith("NoEvent: ") || previousActions[previousActions.length - 1].startsWith("Monologue: ") || previousActions[previousActions.length - 1].startsWith("Buy: ") || previousActions[previousActions.length - 1] == "Shop"))
-			return '<button class="btn btn-default newAction">Next row</button><br>';
+			return '<button class="btn btn-default newAction">Next row</button>';
 
 		if (previousActions.length == 0)
-			actionButtons += (window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1) == "Item" ? '<button class="btn btn-default newAction">OnEvent</button><button class="btn btn-default newAction">NoEvent</button>' : '')
-			 + '<button class="btn btn-default newAction">HasItem</button><button class="btn btn-default newAction">Section</button><button class="btn btn-default newAction">XX%</button><button class="btn btn-default newAction">Choice</button><button class="btn btn-default newAction">Shop</button>';
+			actionButtons += (window.location.pathname.substring(window.location.pathname.lastIndexOf("/") + 1) == "Item" ? '<button class="btn btn-default newAction">OnEvent</button><button class="btn btn-default newAction">NoEvent</button>' : '') +
+			'<button class="btn btn-default newAction">HasItem</button><button class="btn btn-default newAction">Section</button><button class="btn btn-default newAction">XX%</button><button class="btn btn-default newAction">Choice</button><button class="btn btn-default newAction">ChoosePlayer</button><button class="btn btn-default newAction">Shop</button>';
 
 		if (previousActions[0] == "")
 			actionButtons += '<button class="btn btn-default newAction">New choice</button>';
 		for (let i = 0; i < previousActions.length; i++) {
 			if (previousActions[i].startsWith("Monologue") || previousActions[i].startsWith("Buy"))
-				return actionButtons + '<button class="btn btn-default newAction">Next row</button><br>';
+				return actionButtons + '<button class="btn btn-default newAction">Next row</button>';
 		}
 
 		actionButtons += '<button class="btn btn-default newAction">Move</button>';
@@ -192,16 +204,16 @@
 		actionButtons += '<button class="btn btn-default newAction">Log+</button>';
 		actionButtons += '<button class="btn btn-default newAction">Goto</button>';
 		actionButtons += '<button class="btn btn-default newAction">Monologue</button>';
-		actionButtons += '<button class="btn btn-default newAction">Give</button>';
-		actionButtons += '<button class="btn btn-default newAction">Remove</button>';
+		actionButtons += '<button class="btn btn-default newAction">GiveItem</button>';
+		actionButtons += '<button class="btn btn-default newAction">RemoveItem</button>';
 		actionButtons += '<button class="btn btn-default newAction">Money</button>';
 
-		actionButtons += '<button class="btn btn-default newAction">Next row</button><br>';
+		actionButtons += '<button class="btn btn-default newAction">Next row</button>';
 		return actionButtons;
 	}
 
 	function createButton(action) {
-		if (action.startsWith("@Buy") || action.startsWith("@Remove") || action.startsWith("@Give"))
+		if (action.startsWith("@Buy") || action.startsWith("@RemoveItem") || action.startsWith("@GiveItem"))
 			return '<button class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span style="color: magenta;">' + action.split(" -> ")[1] + '</span></button>';
 		else if (action.startsWith("@OnEvent") || action.startsWith("@HasItem"))
 			return '<button class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span style="color: red;">' + action.split(" -> ")[1] + '</span></button>';
@@ -210,6 +222,8 @@
 		else if (action.startsWith("@Move") || action.startsWith("@Money") || action.startsWith("@Log") || action.startsWith("@Monologue"))
 			return '<button class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span>' + action.split(" -> ")[1] + '</span></button>';
 		else if (action.startsWith("@Choice"))
+			return '<button class="btn btn-warning bAction">' + action.substring(1).split(" -> ")[0] + ': <span>' + action.substring(1).split(" -> ")[1] + '</span></button>';
+		else if (action.startsWith("@ChoosePlayer"))
 			return '<button class="btn btn-warning bAction">' + action.substring(1).split(" -> ")[0] + ': <span>' + action.substring(1).split(" -> ")[1] + '</span></button>';
 		else if (action.startsWith("@C") && action.indexOf(" -> ") != -1 && action.substring(2).split(" ")[0].replace(/[0-9]*/, "") == "")
 			return '<button class="btn btn-link"></button><button class="btn btn-warning bAction"><span>' + action.split(" -> ")[1] + '</spam></button>';

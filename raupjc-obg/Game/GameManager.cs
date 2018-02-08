@@ -180,7 +180,7 @@ namespace raupjc_obg.Game
                 var a = action;
 
                 // If the action is a chain of actions
-                if (action.Contains(';'))
+                if (action.Contains(';') && !action.Contains("ChoosePlayer"))
                 {
                     a = action.Split(';')[0];
                     action = action.Substring(a.Length + 1).Trim();
@@ -225,33 +225,68 @@ namespace raupjc_obg.Game
                 }
                 else if (a.StartsWith("@Move")) // Action should contain number of spaces. Move() method handles actual moving.
                 {
-                    Move(t, int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()));
+                    if (a.Contains(","))
+                    {
+                        var pName = a.Split(',')[1].Trim();
+                        var mN = int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim().Split(',')[0].Trim());
+                        Move(Players.Keys.ToList().IndexOf(pName), mN);
+                    }
+                    else
+                        Move(t, int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()));
                 }
-                else if (a.StartsWith("@Remove")) // Remove an item from inventory
+                else if (a.StartsWith("@RemoveItem")) // Remove an item from inventory
                 {
-                    player.Items.Remove(player.Items.First(item =>
-                        item.Name.Equals(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim())));
+                    if (a.Contains(","))
+                    {
+                        var pName = a.Split(',')[1].Trim();
+                        var pItem = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim().Split(',')[0].Trim();
+                        Players[pName].Items.Remove(Players[pName].Items.First(item => item.Name.Equals(pItem)));
+                    }
+                    else
+                        player.Items.Remove(player.Items.First(item =>
+                            item.Name.Equals(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim())));
                 }
-                else if (a.StartsWith("@Give")) // Add an item to inventory
+                else if (a.StartsWith("@GiveItem")) // Add an item to inventory
                 {
-                    player.Items.Add(Game.Items[a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()]);
+                    if (a.Contains(","))
+                    {
+                        var pName = a.Split(',')[1].Trim();
+                        var pItem = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim().Split(',')[0].Trim();
+                        Players[pName].Items.Add(Game.Items[pItem]);
+                    }
+                    else
+                        player.Items.Add(Game.Items[a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()]);
                 }
                 else if (a.StartsWith("@Money")) // Give or take money
                 {
-                    var operation = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()[0];
-                    var ammount = int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim().Substring(1));
+                    if (a.Contains(","))
+                    {
+                        var pName = a.Split(',')[1].Trim();
+                        var operation = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Split(',')[0].Trim()[0];
+                        var ammount = int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Split(',')[0].Trim().Substring(1));
 
-                    if (operation.Equals('+') || operation.Equals('-'))
-                        player.Money += (operation.Equals('-') ? -1 : 1) * ammount;
+                        if (operation.Equals('+') || operation.Equals('-'))
+                            Players[pName].Money += (operation.Equals('-') ? -1 : 1) * ammount;
+                        else
+                            Players[pName].Money = ammount;
+                    }
                     else
-                        player.Money = ammount;
+                    {
+                        var operation = a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim()[0];
+                        var ammount = int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim().Substring(1));
+
+                        if (operation.Equals('+') || operation.Equals('-'))
+                            player.Money += (operation.Equals('-') ? -1 : 1) * ammount;
+                        else
+                            player.Money = ammount;
+                    }
                 }
                 else if (a.StartsWith("@Log+")) // Print text to log like "[Date] Player " + text
                 {
                     Log.Add("[" + DateTime.Now + "] " + Players.Keys.ToList()[t] + " " +
                             a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim());
                 }
-                else if (a.StartsWith("@Log")) // Print text to  like "[Date] " + text
+                else if (a.StartsWith("@Log")) // Print text to log like "[Date] " + text
                 {
                     Log.Add("[" + DateTime.Now + "] " + a.Split(new[] { "->" }, StringSplitOptions.None)[1].Trim());
                 }
@@ -281,6 +316,20 @@ namespace raupjc_obg.Game
                     }
                     return str + "<!<" + i + ">!>";
                 }
+                else if (a.StartsWith("@ChoosePlayer")) // Player can choose player in range
+                {
+                    if (hb is Event)
+                        ChangeScene("choice");
+                    var str = "@Choice -> Choose player";
+                    var j = 1;
+
+                    Players.Values.Where(p => (Math.Abs(player.Space - p.Space) <= int.Parse(a.Split(new[] { "->" }, StringSplitOptions.None)[1].Split(';')[0].Trim()))).ToList().ForEach(p =>
+                    {
+                        str += "\n@C" + j++ + " -> " + p.Username + ";" + a.Split(';')[1].Trim() + "," + p.Username;
+                    });
+
+                    return str + "<!<" + i + ">!>";
+                }
                 else if (a.Equals("@Shop") && hb is Event) // Open the shop menu
                 {
                     ChangeScene("shop");
@@ -296,7 +345,6 @@ namespace raupjc_obg.Game
                 }
             }
 
-            //return "<!<" + i + ">!>";
             return RunBehaviour(hb, i, null, t);
         }
 
