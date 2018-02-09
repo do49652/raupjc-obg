@@ -3,7 +3,7 @@
 var start = function () {
 	var inc = document.getElementById("joined");
 	var wsImpl = window.WebSocket || window.MozWebSocket;
-	window.ws = new wsImpl("ws://192.168.1.5:8181");
+	window.ws = new wsImpl("ws://192.168.1.2:8181");
 
 	var admin = false;
 	var username = document.getElementById("username").innerHTML;
@@ -159,7 +159,7 @@ var start = function () {
 				$("#items").text("").append(log);
 
 				if (game["Scene"] == "end")
-					$("#game").text("").append('<form action="game/rate" method="post"><input type="hidden" name="GameName" value="' + thegamename + '"/><p id="message"></p><textarea name="Comment" style="width:80%;"></textarea><br><button type="submit">Submit</button></form>');
+                    $("#game").text("").append('<form action="game/rate" method="post"><input type="hidden" name="GameName" value="' + thegamename + '"/><p id="message"></p><textarea name="Comment" style="width:auto;"></textarea><br><br><input type="hidden" id="ratingStars" name="Rating"/><br><br><button class="btn btn-default" type="submit">Submit</button></form>');
 				else if (game["Scene"] == "choice")
 					$("#game").text("").append('<p id="message"></p><button class="btn btn-info" id="proceed1">Choice1</button><button class="btn btn-info" id="proceed2">Choice2</button><button class="btn btn-info" id="proceed3">Choice3</button><button class="btn btn-info" id="proceed4">Choice4</button><button class="btn btn-info" id="proceed5">Choice5</button><button class="btn btn-info" id="proceed6">Choice6</button><button class="btn btn-info" id="proceed7">Choice7</button><button class="btn btn-info" id="proceed8">Choice8</button>');
 				else if (game["Scene"] == "event")
@@ -172,7 +172,8 @@ var start = function () {
 					$("#game").text("").append('<p id="message"></p><div class="row"><div class="col-md-6"><button class="btn btn-info" id="proceed1">Item1</button></div><div class="col-md-6"><button class="btn btn-info" id="proceed2">Item2</button></div></div><div class="row"><div class="col-md-6"><button class="btn btn-info" id="proceed3">Item3</button></div><div class="col-md-6"><button class="btn btn-info" id="proceed4">Item4</button></div></div><div class="row"><div class="col-md-6"><button class="btn btn-info" id="proceed5">Item5</button></div><div class="col-md-6"><button class="btn btn-info" id="proceed6">Item6</button></div></div><div class="row"><div class="col-md-6"><button class="btn btn-info" id="proceed7">Item7</button></div><div class="col-md-6"><button class="btn btn-info" id="proceed8">Item8</button></div></div><div class="row"><button class="btn btn-warning" id="cancel">Cancel</button></div>');
 			}).promise().done().then(function () {
 				if (game["Scene"] == "end") {
-					$("#message").text("").append("Rate & comment the game");
+                    $("#message").text("").append("Rate & comment the game");
+                    $("#ratingStars").rating();
 				} else if (game["Scene"] == "roll") {
 					if (playingUsername == username) {
 						$("#rollDice").attr("disabled", false);
@@ -295,7 +296,7 @@ var start = function () {
 					});
 				}
 			}).promise().done().then(function () {
-				//$('#game').find('button').first().focus();
+				$('#game').find('button').first().focus();
 			});
 		}
 	};

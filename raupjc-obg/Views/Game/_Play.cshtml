@@ -34,7 +34,7 @@
             <div id="lobby" class="row" style="text-align: center">
                 <div id="joined" class="row"></div><br />
                 <div id="startgame" class="row hidden">
-                    <div class="panel-group col-md-10" id="accordion">
+                    <div class="panel-group col-md-11" id="accordion">
                         @{
                             var i = 0;
                             foreach (var g in Model.reviews.Select(r => r.Game).ToList())
@@ -44,6 +44,7 @@
                                     <div class="panel-heading" align="left">
                                         <h4 class="panel-title">
                                             <a data-toggle="collapse" data-parent="#accordion" href="#collapse@(i)">@(g.Name)</a>
+                                            <a class="pull-right" data-toggle="collapse" data-parent="#accordion" href="#collapse@(i)">@("Rating: " + Model.reviews.Where(r => r.Game.Name.Equals(g.Name)).ToList().Select(r => r.Rating).Average())</a>
                                         </h4>
                                     </div>
                                     <div id="collapse@(i)" class="panel-collapse collapse">

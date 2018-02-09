@@ -328,7 +328,7 @@ namespace raupjc_obg.Controllers
                 return RedirectToAction("Index", "Home");
             using (var db = new GameDbContext(((Server)_server).ConnectionString))
             {
-                var review = db.Reviews.FirstOrDefault(r => r.UserId.ToString().Equals(currentUser.Id));
+                var review = db.Reviews.FirstOrDefault(r => r.UserId.ToString().Equals(currentUser.Id) && r.Game.Name.Equals(vm.GameName));
                 if (review == null)
                 {
                     review = new Review
