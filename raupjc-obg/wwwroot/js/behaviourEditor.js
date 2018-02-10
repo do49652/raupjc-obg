@@ -163,7 +163,7 @@
 					updateBehaviourEditor();
 
 					$("#save-item-behaviour, #save-event-behaviour").text("Save");
-					$("#save-item-behaviour, #save-event-behaviour").prop("disabled", false);
+					//$("#save-item-behaviour, #save-event-behaviour").prop("disabled", false);
 				}
 			});
 

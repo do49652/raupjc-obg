@@ -23,8 +23,8 @@
 			dataType: "json",
 			success: function (res) {
 				l.stop();
-				btn.text("Saved");
-				btn.prop("disabled", true);
+				//btn.text("Saved");
+				//btn.prop("disabled", true);
 			}
 		});
 	});
