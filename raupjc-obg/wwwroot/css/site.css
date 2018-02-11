@@ -44,3 +44,16 @@
     resize: horizontal;
     min-width: 300px;
 }
+
+.bAction[disabled] {
+    opacity: 1;
+    cursor: default;
+}
+
+span.edit {
+    cursor: pointer;
+}
+
+span.glyphicon.glyphicon-remove {
+    cursor: pointer;
+}

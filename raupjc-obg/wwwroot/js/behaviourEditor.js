@@ -144,7 +144,7 @@
 				}
 			});
 
-			bAction.find('span').editable({
+			bAction.find('span.edit').editable({
 				type: 'text',
 				value: text,
 				success: function (response, newValue) {
@@ -165,6 +165,25 @@
 					$("#save-item-behaviour, #save-event-behaviour").text("Save");
 					//$("#save-item-behaviour, #save-event-behaviour").prop("disabled", false);
 				}
+			});
+
+			bAction.find('span.glyphicon.glyphicon-remove').off('click').click(function () {
+				var subBegin = textEditor[line].substring(0, textEditor[line].indexOf(text) + 1).lastIndexOf('@');
+				var subEnd = textEditor[line].indexOf(text) + text.length;
+
+				textEditor[line] = textEditor[line].split('').reverse().join('').replace(textEditor[line].substring(subBegin, subEnd).split('').reverse().join(''), '').split('').reverse().join('').trim();
+
+				textEditor[line] = textEditor[line].replace(' ;', ';');
+				while (textEditor[line].indexOf(';;') != -1)
+					textEditor[line] = textEditor[line].replace(';;', ';');
+				
+				if (textEditor[line][0] == ';')
+					textEditor[line] = textEditor[line].substring(1);
+				if (textEditor[line][textEditor[line].length - 1] == ';')
+					textEditor[line] = textEditor[line].substring(0, textEditor[line].length - 1);
+
+				updateTextEditor(textEditor);
+				updateBehaviourEditor();
 			});
 
 		});
@@ -214,23 +233,23 @@
 
 	function createButton(action) {
 		if (action.startsWith("@Buy") || action.startsWith("@RemoveItem") || action.startsWith("@GiveItem"))
-			return '<button class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span style="color: magenta;">' + action.split(" -> ")[1] + '</span></button>';
+			return '<button disabled class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span class="edit" style="color: magenta;">' + action.split(" -> ")[1] + '</span> <span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
 		else if (action.startsWith("@OnEvent") || action.startsWith("@HasItem"))
-			return '<button class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span style="color: red;">' + action.split(" -> ")[1] + '</span></button>';
+			return '<button disabled class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span class="edit" style="color: red;">' + action.split(" -> ")[1] + '</span> <span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
 		else if (action.startsWith("@NoEvent") || action.startsWith("@Goto"))
-			return '<button class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span style="color: blue;">' + action.split(" -> ")[1] + '</span></button>';
+			return '<button disabled class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span class="edit" style="color: blue;">' + action.split(" -> ")[1] + '</span> <span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
 		else if (action.startsWith("@Move") || action.startsWith("@Money") || action.startsWith("@Log") || action.startsWith("@Monologue"))
-			return '<button class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span>' + action.split(" -> ")[1] + '</span></button>';
+			return '<button disabled class="btn btn-default bAction">' + action.split(" -> ")[0].substring(1) + ': <span class="edit">' + action.split(" -> ")[1] + '</span> <span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
 		else if (action.startsWith("@Choice"))
-			return '<button class="btn btn-warning bAction">' + action.substring(1).split(" -> ")[0] + ': <span>' + action.substring(1).split(" -> ")[1] + '</span></button>';
+			return '<button disabled class="btn btn-warning bAction">' + action.substring(1).split(" -> ")[0] + ': <span class="edit">' + action.substring(1).split(" -> ")[1] + '</span> <span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
 		else if (action.startsWith("@ChoosePlayer"))
-			return '<button class="btn btn-warning bAction">' + action.substring(1).split(" -> ")[0] + ': <span>' + action.substring(1).split(" -> ")[1] + '</span></button>';
+			return '<button disabled class="btn btn-warning bAction">' + action.substring(1).split(" -> ")[0] + ': <span class="edit">' + action.substring(1).split(" -> ")[1] + '</span ><span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
 		else if (action.startsWith("@C") && action.indexOf(" -> ") != -1 && action.substring(2).split(" ")[0].replace(/[0-9]*/, "") == "")
-			return '<button class="btn btn-link"></button><button class="btn btn-warning bAction"><span>' + action.split(" -> ")[1] + '</spam></button>';
+			return '<button disabled class="btn btn-link"></button><button class="btn btn-warning bAction"><span class="edit">' + action.split(" -> ")[1] + '</spam> <span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
 		else if (action.startsWith("@") && action.replace(/\s/g, "") == action)
-			return '<button class="btn btn-primary bAction"><span>' + action.substring(1) + '</span></button>';
+			return '<button disabled class="btn btn-primary bAction"><span class="edit">' + action.substring(1) + '</span> <span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
 		else
-			return '<button class="btn btn-default bAction"><span>' + action.substring(1) + '</span></button>';
+			return '<button disabled class="btn btn-default bAction"><span class="edit">' + action.substring(1) + '</span> <span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
 	}
 }
 
