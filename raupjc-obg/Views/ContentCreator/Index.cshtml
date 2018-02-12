@@ -5,7 +5,9 @@
     <h1>Your Games</h1>
     <div class="row">
         <div class="col-md-6">
-            <h4>Public games</h4>
+            <h4>
+                Public games <span class="badge badge-info" data-toggle="tooltip" title="Everyone can play these games.">i</span>
+            </h4>
             @foreach (var game in Model.Where(g => !g.Private).ToList())
             {
                 <a class="btn btn-default" asp-controller="ContentCreator" asp-action="Game" asp-route-id="@game.Id">@game.Name</a><br />
@@ -14,7 +16,8 @@
         </div>
 
         <div class="col-md-6">
-            <h4>Private games</h4>
+            <h4>Private games <span class="badge badge-info" data-toggle="tooltip" title="Only you can play and edit these games.">i</span>
+            </h4>
             @foreach (var game in Model.Where(g => g.Private).ToList())
             {
                 <a class="btn btn-default" asp-controller="ContentCreator" asp-action="Game" asp-route-id="@game.Id">@game.Name</a><br />
@@ -25,7 +28,7 @@
             <div id="new-game" class="collapse">
                 <form asp-action="Game" method="post" data-toggle="validator">
                     <div class="form-group">
-                        <label>Name:</label>
+                        <label>Name: <span class="badge badge-info" data-toggle="tooltip" title="Games must have unique names!">i</span></label>
                         <input class="form-control" autocomplete="off" maxlength="42" pattern="[a-zA-Z0-9 -]*" data-error="Only alphanumeric characters allowed." type="text" name="Name" required />
                         <div class="help-block with-errors"></div>
                     </div>
@@ -50,5 +53,8 @@
 <script>
     $(function () {
         $('#contentPill').addClass("active");
+    });
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
     });
 </script>

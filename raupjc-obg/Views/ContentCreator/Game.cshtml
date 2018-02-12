@@ -17,8 +17,8 @@
                 @if (Model.Private)
                 {
                     <div class="input-group">
-                        <button id="publish-game" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Publish</span></button>
-                        <button id="remove-game" class="btn btn-danger ladda-button" data-style="slide-left"><span class="ladda-label">Remove</span></button>
+                        <button id="publish-game" class="btn btn-primary ladda-button" data-style="slide-left" data-toggle="tooltip" title="Once you publish a game you can't edit it anymore."><span class="ladda-label">Publish</span></button>
+                        <button id="remove-game" class="btn btn-danger ladda-button" data-style="slide-left" data-toggle="tooltip" title="This action can't be undone."><span class="ladda-label">Remove</span></button>
                     </div>
                     <br />
                 }
@@ -31,6 +31,7 @@
                             <button id="save-game-startingMoney" class="btn btn-primary ladda-button" data-style="slide-left"><span class="ladda-label">Save</span></button>
                         </div>
                     }
+                    <span class="pull-right badge badge-info" data-toggle="tooltip" title="Each player gets this amount of money when they start.">i</span>
                 </div>
             </div>
         </div>
@@ -43,8 +44,12 @@
                         <thead>
                             <tr>
                                 <th>Event</th>
-                                <th>Random</th>
-                                <th>Set</th>
+                                <th>
+                                    Random <span class="badge badge-info" data-toggle="tooltip" title="Should the event occur randomly?">i</span>
+                                </th>
+                                <th>
+                                    Set <span class="badge badge-info" data-toggle="tooltip" title="Specify the position the event will occur. Can be left blank.">i</span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -109,7 +114,7 @@
                     <input type="hidden" name="GameName" value="@Model.Name" />
 
                     <div class="form-group">
-                        <label>Name:</label>
+                        <label>Name: <span class="badge badge-info" data-toggle="tooltip" title="Events must have unique names!">i</span></label>
                         <input class="form-control" autocomplete="off" maxlength="42" pattern="[a-zA-Z0-9 ]*" data-error="Only alphanumeric characters allowed." type="text" name="Name" required />
                         <div class="help-block with-errors"></div>
                     </div>
@@ -148,7 +153,7 @@
                     <input type="hidden" name="GameName" value="@Model.Name" />
 
                     <div class="form-group">
-                        <label>Name:</label>
+                        <label>Name: <span class="badge badge-info" data-toggle="tooltip" title="Items must have unique names!">i</span></label>
                         <input class="form-control" autocomplete="off" maxlength="42" pattern="[a-zA-Z0-9 ]*" data-error="Only alphanumeric characters allowed." type="text" name="Name" required />
                         <div class="help-block with-errors"></div>
                     </div>
@@ -181,5 +186,8 @@
     $(function () {
         $('#homePill').removeClass("active");
         $('#contentPill').addClass("active");
+    });
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
     });
 </script>

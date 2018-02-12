@@ -12,7 +12,8 @@
     <input type="hidden" id="name" value="@Model.Name" />
 
     <div class="col-md-6">
-        <h4>Behaviour</h4>
+        <h4>Behaviour <span class="badge badge-info" data-toggle="tooltip" title="Behaviour of the event. For more info check documentation.">i</span>
+        </h4>
 
         <ul class="nav nav-pills">
             <li class="active"><a id="switchToEditor" data-toggle="pill" href="#behaviourSimpleEditor">Editor</a></li>
@@ -34,7 +35,8 @@
     </div>
 
     <div class="col-md-4">
-        <h4>Shop</h4>
+        <h4>Shop <span class="badge badge-info" data-toggle="tooltip" title="Items for the shop. If price left blank, item will not be shown in shop.">i</span>
+        </h4>
 
         <div class="table-responsive">
             <table class="table table-condensed">
@@ -106,5 +108,8 @@
         $('#contentPill').addClass("active");
         $('#contentPill > a').text("@Model.GameName")
         $('#contentPill > a').attr("href", document.referrer)
+    });
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
     });
 </script>
