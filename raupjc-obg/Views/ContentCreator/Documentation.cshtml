@@ -1,0 +1,129 @@
+﻿
+@{
+    ViewData["Title"] = "Documentation";
+}
+<div class="container">
+    <h2>Documentation</h2>
+    <br />
+    <ul>
+        <li>
+            <h4>Move &#8594; <i style="color:indianred;">spaces</i></h4>
+            Moves the player.<br />
+            '@('@')Move -> 5' will move the player 5 spaces forward.<br />
+            '@('@')Move -> -5' will move the player 5 spaces back.
+        </li>
+
+        <br />
+
+        <li>
+            <h4>Log &#8594; <i style="color:indianred;">message</i></h4>
+            Prints the message to the log.<br />
+            '@('@')Log -> Hello' will print Hello in log.
+        </li>
+
+        <br />
+
+        <li>
+            <h4>Log+ &#8594; <i style="color:indianred;">message</i></h4>
+            Prints the message to the log as if the players said it.<br />
+            '@('@')Log+ -> jumped over the fence.' will print Player jumped over the fence.
+        </li>
+
+        <br />
+
+        <li>
+            <h4>Monologue &#8594; <i style="color:indianred;">text</i></h4>
+            Prints the text to the screen.
+        </li>
+
+        <br />
+
+        <li>
+            <h4>GiveItem &#8594; <i style="color:indianred;">item</i></h4>
+            Gives the player specified item. Item must exist in the game.
+        </li>
+
+        <br />
+
+        <li>
+            <h4>RemoveItem &#8594; <i style="color:indianred;">item</i></h4>
+            Removes the item from players inventory.
+        </li>
+
+        <br />
+
+        <li>
+            <h4>Money &#8594; <i style="color:indianred;">amount</i></h4>
+            Give or take money from player.<br />
+            '@('@')Money -> +5' will give money to player.<br />
+            '@('@')Money -> -5' will will take money from player.<br />
+            '@('@')Money -> =5' will set players money.
+        </li>
+
+        <br />
+
+        <li>
+            <h4>ChoosePlayer &#8594; <i style="color:indianred;">range</i></h4>
+            Player can choose a player in range for action that follows it.<br />
+            '@('@')ChoosePlayer -> 50; @('@')Move -> -10' will move a player of choice 10 places back.
+        </li>
+
+        <br />
+
+        <li>
+            <h4>Section</h4>
+            Create a section of the behaviour. Used for Goto.<br />
+            '@('@')SectionName'
+        </li>
+
+        <br />
+
+        <li>
+            <h4>Goto &#8594; <i style="color:indianred;">section</i></h4>
+            Used for jumping to sections.<br />
+            '@('@')Goto -> SectionName' will jump to SectionName section and continue from there.
+        </li>
+
+        <br />
+
+        <li>
+            <h4>RemoveItem &#8594; <i style="color:indianred;">item</i></h4>
+            Removes the item from players inventory.
+        </li>
+
+        <br />
+
+        <li>
+            <h4>RemoveItem &#8594; <i style="color:indianred;">item</i></h4>
+            Removes the item from players inventory.
+        </li>
+
+        <br />
+
+        <li>
+            <h4>RemoveItem &#8594; <i style="color:indianred;">item</i></h4>
+            Removes the item from players inventory.
+        </li>
+
+        <br />
+
+
+    </ul>
+</div>
+
+
+
+
+
+
+
+
+<script>
+    $(function () {
+        $('#docsPill').addClass("active");
+    });
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+        $('.a').css('display', 'block');
+    });
+</script>

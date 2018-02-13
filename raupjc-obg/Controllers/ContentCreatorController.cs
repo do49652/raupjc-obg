@@ -262,6 +262,11 @@ namespace raupjc_obg.Controllers
             return str;
         }
 
+        public IActionResult Documentation()
+        {
+            return View();
+        }
+
 
     }
 }
