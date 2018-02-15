@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\lib\ladda-bootstrap\" />
+    <Folder Include="wwwroot\NewFolder\" />
   </ItemGroup>
 
   <ItemGroup>

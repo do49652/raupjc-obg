@@ -3,7 +3,7 @@
 var start = function () {
     var inc = document.getElementById("joined");
     var wsImpl = window.WebSocket || window.MozWebSocket;
-    window.ws = new wsImpl("ws://13.58.58.66:8181");
+    window.ws = new wsImpl("ws://onlineboardgames.tk:8181");
 
     var admin = false;
     var username = document.getElementById("username").innerHTML;

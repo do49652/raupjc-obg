@@ -3,9 +3,35 @@
     ViewData["Title"] = "Documentation";
 }
 <div class="container">
-    <h2>Examples <small><a href="#">Show documentation</a></small></h2>
+    <h2>Examples <small><a asp-controller="ContentCreator" asp-action="Documentation">Show documentation</a></small></h2>
     <br />
-    
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Simple examples</h3>
+            <ul>
+                <li>
+                    <h4>Simple monologue</h4>
+                    <img class="img-responsive borderedImage" width="300" src="~/images/monologu.png" />
+                </li>
+                <li>
+                    <h4>Goto and Sections</h4>
+                    <img class="img-responsive borderedImage" width="300" src="~/images/goto.png" />
+                </li>
+                <li>
+                    <h4>Choices</h4>
+                    <img class="img-responsive borderedImage" width="300" src="~/images/choice.png" />
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h3>Simple monologue</h3>
+            <video class="borderedImage" height="260" autoplay loop>
+                <source src="~/images/basics.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
 </div>
 
 

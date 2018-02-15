@@ -118,3 +118,8 @@ span.glyphicon.glyphicon-remove {
     .badge-inverse:hover {
         background-color: #1a1a1a;
     }
+
+.borderedImage {
+    border: solid;
+    border-width: 1px;
+}

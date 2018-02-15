@@ -245,7 +245,7 @@
 		else if (action.startsWith("@ChoosePlayer"))
 			return '<button disabled class="btn btn-warning bAction">' + action.substring(1).split(" -> ")[0] + ': <span class="edit">' + action.substring(1).split(" -> ")[1] + '</span ><span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
 		else if (action.startsWith("@C") && action.indexOf(" -> ") != -1 && action.substring(2).split(" ")[0].replace(/[0-9]*/, "") == "")
-			return '<button disabled class="btn btn-link"></button><button class="btn btn-warning bAction"><span class="edit">' + action.split(" -> ")[1] + '</spam> <span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
+			return '<button disabled class="btn btn-link"></button><button class="btn btn-warning bAction"><span class="edit">' + action.split(" -> ")[1] + '</span> <span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
 		else if (action.startsWith("@") && action.replace(/\s/g, "") == action)
 			return '<button disabled class="btn btn-primary bAction"><span class="edit">' + action.substring(1) + '</span> <span class="glyphicon glyphicon-remove" style="color:red"></span></button>';
 		else
