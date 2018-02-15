@@ -16,7 +16,7 @@ namespace raupjc_obg
             return WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseKestrel()
-                .UseUrls("http://*:8080")
+                .UseUrls("http://*:80")
                 .Build();
         }
     }

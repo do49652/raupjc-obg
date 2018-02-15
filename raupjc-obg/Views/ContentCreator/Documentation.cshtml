@@ -3,7 +3,7 @@
     ViewData["Title"] = "Documentation";
 }
 <div class="container">
-    <h2>Documentation</h2>
+    <h2>Documentation <small><a href="#">Show examples</a></small></h2>
     <br />
     <ul>
         <li>
@@ -87,27 +87,53 @@
         <br />
 
         <li>
-            <h4>RemoveItem &#8594; <i style="color:indianred;">item</i></h4>
-            Removes the item from players inventory.
+            <h4>Shop <small><i>Only in events.</i></small></h4>
+            Shows the shop screen for current event.
         </li>
 
         <br />
 
         <li>
-            <h4>RemoveItem &#8594; <i style="color:indianred;">item</i></h4>
-            Removes the item from players inventory.
+            <h4>HasItem &#8594; <i style="color:indianred;">item</i></h4>
+            If player has the item in his inventory, following action will run.<br />
+            '@('@')HasItem -> Running Shoes; @('@')Move -> 10' will move the player 10 places forward if he has Running Shoes.
         </li>
 
         <br />
 
         <li>
-            <h4>RemoveItem &#8594; <i style="color:indianred;">item</i></h4>
-            Removes the item from players inventory.
+            <h4>OnEvent &#8594; <i style="color:indianred;">event</i> <small><i>Only on items.</i></small></h4>
+            If <i style="color:indianred;">event</i> is current event, following action will run.<br />
+            '@('@')OnEvent -> River; @('@')Move -> 10' will move the player 10 places forward if the current event is River.
         </li>
 
         <br />
 
+        <li>
+            <h4>NoEvent &#8594; <i style="color:indianred;">section</i> <small><i>Only on items.</i></small></h4>
+            Acts like Goto. Jumps to section if there's no active event.
+        </li>
 
+        <br />
+
+        <li>
+            <h4>%50</h4>
+            Choose next action by random chance with set probability.<br />
+            @('@')05%; @('@')Goto -> FirstPrize<br />
+            @('@')25%; @('@')Goto -> SecondPrize<br />
+            @('@')50%; @('@')Goto -> ThirdPrize<br />
+            @('@')20%; @('@')Goto -> NoPrize<br />
+        </li>
+
+        <br />
+
+        <li>
+            <h4>Choice &#8594; <i style="color:indianred;">text</i></h4>
+            Gives the player up to 8 choices to choose.<br />
+            @('@')Choice -> You stopped at a intersection. Where will you go?<br />
+            @('@')C1 -> Left; @('@')Goto -> LeftTurn<br />
+            @('@')C2 -> Right; @('@')Goto -> RightTurn<br />
+        </li>
     </ul>
 </div>
 
