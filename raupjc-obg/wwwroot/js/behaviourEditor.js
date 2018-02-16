@@ -196,7 +196,13 @@
 		var actionButtons = '';
 
 		if (previousActions.length > 0 && previousActions[0].startsWith("Choice: "))
-			return '<button class="btn btn-default newAction">New choice</button>';
+            return '<button class="btn btn-default newAction">New choice</button>';
+
+        if (previousActions.length == 2 && previousActions[0] == "")
+            return '<button class="btn btn-default newAction">Goto</button>';
+
+        if (previousActions.length > 2 && previousActions[0] == "")
+            return '<button class="btn btn-default newAction">New choice</button><button class="btn btn-default newAction">Next row</button>';
 
 		if (previousActions.length == 1 && previousActions[0].startsWith("ChoosePlayer: "))
 			return '<button class="btn btn-default newAction">Move</button><button class="btn btn-default newAction">GiveItem</button><button class="btn btn-default newAction">RemoveItem</button><button class="btn btn-default newAction">Money</button>';

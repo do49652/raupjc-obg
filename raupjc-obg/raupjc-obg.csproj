@@ -5,6 +5,13 @@
     <UserSecretsId>aspnet-raupjc_obg-20737213-5F3E-446F-8525-F00B5093543D</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="wwwroot\NewFolder\**" />
+    <Content Remove="wwwroot\NewFolder\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder\**" />
+    <None Remove="wwwroot\NewFolder\**" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="EntityFramework" Version="6.2.0" />
@@ -32,7 +39,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\lib\ladda-bootstrap\" />
-    <Folder Include="wwwroot\NewFolder\" />
   </ItemGroup>
 
   <ItemGroup>
