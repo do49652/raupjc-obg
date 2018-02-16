@@ -50,7 +50,7 @@ namespace raupjc_obg.Repositories
 
         public async Task<bool> Add(ItemModel item)
         {
-            var oItem = await _dbContext.Items.FirstOrDefaultAsync(i => i.Id.Equals(item.Id)) ?? await _dbContext.Items.FirstOrDefaultAsync(i => i.Name.Equals(item.Name));
+            var oItem = await _dbContext.Items.FirstOrDefaultAsync(i => i.Id.Equals(item.Id)) ?? await _dbContext.Items.FirstOrDefaultAsync(i => i.Name.Equals(item.Name) && i.Game.Name.Equals(item.Game.Name));
             if (oItem != null && oItem.UserId.Equals(item.UserId) && oItem.Game.Name.Equals(item.Game.Name))
             {
                 oItem.Name = item.Name;

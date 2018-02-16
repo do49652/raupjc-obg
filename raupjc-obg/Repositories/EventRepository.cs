@@ -50,7 +50,7 @@ namespace raupjc_obg.Repositories
 
         public async Task<bool> Add(EventModel _event)
         {
-            var oEvent = await _dbContext.Events.FirstOrDefaultAsync(e => e.Id.Equals(_event.Id)) ?? await _dbContext.Events.FirstOrDefaultAsync(e => e.Name.Equals(_event.Name));
+            var oEvent = await _dbContext.Events.FirstOrDefaultAsync(e => e.Id.Equals(_event.Id)) ?? await _dbContext.Events.FirstOrDefaultAsync(e => e.Name.Equals(_event.Name) && e.Game.Name.Equals(_event.Game.Name));
             if (oEvent != null && oEvent.UserId.Equals(_event.UserId) && oEvent.Game.Name.Equals(_event.Game.Name))
             {
                 oEvent.Name = _event.Name;

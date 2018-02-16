@@ -99,7 +99,7 @@ namespace raupjc_obg.Controllers
 
             eventVm.EventModels = await _eventRepository.GetAll();
 
-            if (eventVm.EventModels.Select(e => e.Name).ToList().Contains(eventVm.Name))
+            if (game.Events.Select(e => e.Name).ToList().Contains(eventVm.Name))
                 return RedirectToAction("Game", new { id = game.Id });
 
             if (await _eventRepository.Add(new EventModel
@@ -122,9 +122,13 @@ namespace raupjc_obg.Controllers
 
         public async Task<IActionResult> Event(string name)
         {
-            var _event = await _eventRepository.GetEventByName(name);
-            var game = await _gameRepository.GetGameById(_event.Game.Id);
+            var url = Request.Headers["Referer"].ToString().Split('/');
+            var game = await _gameRepository.GetGameById(Guid.Parse(url[url.Length - 1]));
+            var _event = game.Events.FirstOrDefault(e => e.Name.Equals(name));
             var eventVm = _event.CreateEventViewModel();
+
+            if (_event == null || game == null)
+                return RedirectToAction("Index");
 
             eventVm.GameModels = game.Dependencies ?? new List<GameModel>();
             if (!eventVm.GameModels.Contains(game))
@@ -154,7 +158,7 @@ namespace raupjc_obg.Controllers
 
             itemVm.ItemModels = await _itemRepository.GetAll();
 
-            if (itemVm.ItemModels.Select(e => e.Name).ToList().Contains(itemVm.Name))
+            if (game.Items.Select(e => e.Name).ToList().Contains(itemVm.Name))
                 return RedirectToAction("Game", new { id = game.Id });
 
             if (await _itemRepository.Add(new ItemModel
