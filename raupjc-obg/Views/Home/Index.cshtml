@@ -2,11 +2,18 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="container">
-    <video class="borderedImage" width=1200 autoplay loop>
-        <source src="~/images/game.mp4#t=2,31" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+<div class="container-fluid">
+    <div class="col-md-6">
+    <h4>
+        <span style="color:darkblue">boardgamesonline.tk</span> allows you to play custom board games made by players themselves!<br />
+        Registered users can create their own games and even rate and comment other games.<br /><br />
+        Check out the Content creator to make your own game. For info, check out the Documentation with examples.<br />
+        To play a game, go to Play game.
+    </h4>
+    </div>
+    <div class="col-md-6">
+        <img class="img-responsive" src="~/images/game.png" />
+    </div>
 </div>
 
 <script>
