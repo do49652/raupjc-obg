@@ -18,6 +18,7 @@ namespace raupjc_obg.Game
         [JsonIgnore]
         public bool GameStarted { get; set; }
         public Dictionary<string, Player> Players { get; set; }
+        public Dictionary<string, int> EventCooldown { get; set; }
 
         public string Scene { get; set; }
         public string Message { get; set; }
@@ -36,6 +37,9 @@ namespace raupjc_obg.Game
             if (Players == null)
                 Players = new Dictionary<string, Player>();
             Players.Values.ToList().ForEach(p => p.Money = Game.StartingMoney);
+
+            if (EventCooldown == null)
+                EventCooldown = new Dictionary<string, int>();
 
             Log = new List<string>();
             _random = new Random(DateTime.Now.Millisecond);
@@ -95,7 +99,7 @@ namespace raupjc_obg.Game
 
             if (player.CurrentEvent == null && _random.Next(0, 100) < 80)
             {
-                var evnts = Game.MiniEvents.Except(player.VisitedEvents).ToList();
+                var evnts = Game.MiniEvents.Except(player.VisitedEvents).Where(e => !EventCooldown.ContainsKey(e.Name)).ToList();
                 if (evnts.Count == 0)
                     return false;
 
@@ -109,12 +113,22 @@ namespace raupjc_obg.Game
             if (player.CurrentEvent == null)
                 return false;
 
+            if (!EventCooldown.ContainsKey(player.CurrentEvent.Name))
+                EventCooldown.Add(player.CurrentEvent.Name, 5);
+
             return true;
         }
 
         public void EndEvent()
         {
             var player = Players[Players.Keys.ToList()[WhosTurn()]];
+
+            EventCooldown.Keys.ToList().ForEach(k => EventCooldown[k]--);
+            EventCooldown.Keys.ToList().ForEach(k =>
+            {
+                if (EventCooldown[k] == 0)
+                    EventCooldown.Remove(k);
+            });
 
             if (player.RepeatEvent <= 1)
             {

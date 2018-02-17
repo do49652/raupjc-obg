@@ -3,7 +3,7 @@
 var start = function () {
     var inc = document.getElementById("joined");
     var wsImpl = window.WebSocket || window.MozWebSocket;
-    window.ws = new wsImpl("ws://192.168.1.2:8181");
+    window.ws = new wsImpl("ws://onlineboardgames.tk:8181");
 
     var admin = false;
     var username = document.getElementById("username").innerHTML;
@@ -141,7 +141,7 @@ var start = function () {
 
                 var log = "";
                 for (let i = 0; i < game["Log"].length; i++)
-                    log += '<span data-toggle="tooltip" data-placement="left auto" data-container="body" title="' + game["Log"][i].split("]")[0].substring(1) + '">' + game["Log"][i].replace(/\[([a-z0-9_ /\\:-]*)\]/i, "") + "</span><br>";
+                    log += '<span data-toggle="tooltip" data-placement="left auto" data-container="body" title="' + game["Log"][i].split("]")[0].substring(1) + '">' + game["Log"][i].replace('['+game["Log"][i].split("]")[0].substring(1)+']', "") + "</span><br>";
                 $("#log").text("").append(log);
                 $('#log').parent().scrollTop($('#log').parent()[0].scrollHeight);
                 $('[data-toggle="tooltip"]').tooltip();
@@ -297,7 +297,7 @@ var start = function () {
                     });
                 }
             }).promise().done().then(function () {
-                $('#game').find('button').first().focus();
+                //$('#game').find('button').first().focus();
             });
         }
     };
