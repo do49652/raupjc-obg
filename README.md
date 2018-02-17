@@ -1,6 +1,6 @@
 # Online board games
 
-[http://onlineboardgames.tk/](onlineboardgames.tk) je aplikacija za igranje i izradu board igara.
+[onlineboardgames.tk](http://onlineboardgames.tk/) je aplikacija za igranje i izradu board igara.
 Registrirani korisnici mogu raditi igre, dok svi mogu igrati javne igre.
 
 Igre je najbolje igrati sa više igrača, a cilj je doći do 150. mjesta.
