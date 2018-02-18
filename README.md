@@ -3,6 +3,10 @@
 [onlineboardgames.tk](http://onlineboardgames.tk/) je aplikacija za igranje i izradu board igara.
 Registrirani korisnici mogu raditi igre, dok svi mogu igrati javne igre.
 
+Demo account sa demo igrom (za pogledati kako izgleda igra u content creatoru):
+	E-mail: demo@onlineboardgames.tk
+	Password: demo
+
 Igre je najbolje igrati sa više igrača, a cilj je doći do 150. mjesta.
 Kroz igru igrači će nailaziti na razne događaje u kojima će njihove odluke utjecati na tok igre.
 
