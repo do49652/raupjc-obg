@@ -178,8 +178,9 @@ namespace raupjc_obg.Controllers
 
         public async Task<IActionResult> Item(string name)
         {
-            var item = await _itemRepository.GetItemByName(name);
-            var game = await _gameRepository.GetGameById(item.Game.Id);
+            var url = Request.Headers["Referer"].ToString().Split('/');
+            var game = await _gameRepository.GetGameById(Guid.Parse(url[url.Length - 1]));
+            var item = game.Items.FirstOrDefault(i => i.Name.Equals(name));
             var itemVm = item.CreateItemViewModel();
 
             itemVm.GameModels = game.Dependencies ?? new List<GameModel>();
